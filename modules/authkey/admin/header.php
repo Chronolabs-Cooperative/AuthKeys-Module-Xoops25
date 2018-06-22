@@ -1,63 +1,33 @@
 <?php
+/**
+ * Authkey API Authentication Keys for xoops.org
+ *
+ * You may not change or alter any portion of this comment or credits
+ * of supporting developers from this source code or any supporting source code
+ * which is considered copyrighted (c) material of the original comment or credit authors.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * @copyright       (c) 2000-2019 Chronolabs Cooperative (8Bit.snails.email)
+ * @license             GNU GPL 2 (http://www.gnu.org/licenses/gpl-2.0.html)
+ * @package             authkey
+ * @since               1.0.7
+ * @author              Simon Antony Roberts <wishcraft@users.sourceforge.net>
+ * @link                https://sourceforge.net/p/xoops/svn/HEAD/tree/XoopsModules/authkey
+ */
 
-/*
-Module: Xcenter
 
-Version: 2.01
-
-Description: Multilingual Content Module with tags and lists with search functions
-
-Author: Written by Simon Roberts aka. Wishcraft (simon@chronolabs.coop)
-
-Owner: Chronolabs
-
-License: See /docs - GPL 2.0
-*/
-
+    global $authkeyModule, $op, $mode, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions, $groups;
 
 	require "../../../include/cp_header.php";
 	
 	require_once (dirname(dirname(dirname(dirname(__FILE__)))).'/include/cp_header.php');
 	
-	if (!defined('_CHARSET'))
-		define("_CHARSET","UTF-8");
-	if (!defined('_CHARSET_ISO'))
-		define("_CHARSET_ISO","ISO-8859-1");
-		
-	$GLOBALS['myts'] = MyTextSanitizer::getInstance();
-	
-	require_once($GLOBALS['xoops']->path(_XTR_PATH_PHP_FUNCTIONS));
-	require_once($GLOBALS['xoops']->path(_XTR_PATH_PHP_FORMOBJECTS));
-	require_once($GLOBALS['xoops']->path(_XTR_PATH_PHP_FORMS));
-	require_once($GLOBALS['xoops']->path(_XTR_PATH_PHP_TEMPLATE));
+	require_once(dirname(__DIR__) . DS . 'header.php');
 	
 	$myts =& MyTextSanitizer::getInstance();
 	
-	$op = (isset($_REQUEST['op']))?strtolower($_REQUEST['op']):'dashboard';
-	$fct = (isset($_REQUEST['fct']))?strtolower($_REQUEST['fct']):'';	
-	$storyid = (isset($_REQUEST['storyid']))?intval($_REQUEST['storyid']):0;
-	$xcenterid = (isset($_REQUEST['xcenterid']))?intval($_REQUEST['xcenterid']):0;
-	$catid = (isset($_REQUEST['catid']))?intval($_REQUEST['catid']):0;
-	$blockid = (isset($_REQUEST['blockid']))?intval($_REQUEST['blockid']):0;
-	$passkey = (isset($_REQUEST['passkey']))?strtolower($_REQUEST['passkey']):'';	
-	$mode = (isset($_REQUEST['mode']))?strtolower($_REQUEST['mode']):_XTR_PERM_MODE_VIEW;	
-	$language = (isset($_REQUEST['language']))?($_REQUEST['language']):$GLOBALS['xoopsConfig']['language'];
-	
-	$module_handler =& xoops_gethandler('module');
-	$criteria = new CriteriaCompo(new Criteria('dirname', 'xlanguage'));
-	$criteria->add(new Criteria('isactive', true));
-	if ($module_handler->getCount($criteria)>0)
-		$GLOBALS['multilingual']=true;
-	else
-		$GLOBALS['multilingual']=false;
-	
-	$GLOBALS['contentTpl'] = new XoopsTpl();
-		
-	$module_handler = xoops_gethandler('module');
-	$config_handler = xoops_gethandler('config');
-	$GLOBALS['xcenterModule'] = $module_handler->getByDirname('xcenter');
-	$GLOBALS['xcenterModuleConfig'] = $config_handler->getConfigList($GLOBALS['xcenterModule']->getVar('mid')); 
-		
 	xoops_load('pagenav');	
 	xoops_load('xoopslists');
 	xoops_load('xoopsformloader');
@@ -69,15 +39,15 @@ License: See /docs - GPL 2.0
 	        include_once $GLOBALS['xoops']->path('/Frameworks/moduleclasses/moduleadmin/moduleadmin.php');
 	        //return true;
 	    }else{
-	        echo xcenter_error("Error: You don't use the Frameworks \"admin module\". Please install this Frameworks");
+	        echo authkey_error("Error: You don't use the Frameworks \"admin module\". Please install this Frameworks");
 	        //return false;
 	    }
-	$GLOBALS['xcenterImageIcon'] = XOOPS_URL .'/'. $GLOBALS['xcenterModule']->getInfo('icons16');
-	$GLOBALS['xcenterImageAdmin'] = XOOPS_URL .'/'. $GLOBALS['xcenterModule']->getInfo('icons32');
+	$GLOBALS['authkeyImageIcon'] = XOOPS_URL .'/'. $GLOBALS['authkeyModule']->getInfo('icons16');
+	$GLOBALS['authkeyImageAdmin'] = XOOPS_URL .'/'. $GLOBALS['authkeyModule']->getInfo('icons32');
 	
 	if ($GLOBALS['xoopsUser']) {
 	    $moduleperm_handler =& xoops_gethandler('groupperm');
-	    if (!$moduleperm_handler->checkRight('module_admin', $GLOBALS['xcenterModule']->getVar( 'mid' ), $GLOBALS['xoopsUser']->getGroups())) {
+	    if (!$moduleperm_handler->checkRight('module_admin', $GLOBALS['authkeyModule']->getVar( 'mid' ), $GLOBALS['xoopsUser']->getGroups())) {
 	        redirect_header(XOOPS_URL, 1, _NOPERM);
 	        exit();
 	    }
@@ -91,8 +61,8 @@ License: See /docs - GPL 2.0
 		$GLOBALS['xoopsTpl'] = new XoopsTpl();
 	}
 	
-	$GLOBALS['xoopsTpl']->assign('pathImageIcon', $GLOBALS['xcenterImageIcon']);
-	$GLOBALS['xoopsTpl']->assign('pathImageAdmin', $GLOBALS['xcenterImageAdmin']);
+	$GLOBALS['xoopsTpl']->assign('pathImageIcon', $GLOBALS['authkeyImageIcon']);
+	$GLOBALS['xoopsTpl']->assign('pathImageAdmin', $GLOBALS['authkeyImageAdmin']);
 	
 	
 ?>

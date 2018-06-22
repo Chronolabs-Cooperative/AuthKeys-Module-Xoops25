@@ -18,5 +18,17 @@
  */
 
 
+	include ('header.php');
 	
+	xoops_loadlanguage('main', basename(dirname(__DIR__)));
+	
+	xoops_cp_header();
+	$indexAdmin = new ModuleAdmin();
+	echo $indexAdmin->addNavigation(basename($_SERVER['PHP_SELF']));	
+	
+	$paypalitemno='VOD106';
+	$aboutAdmin = new ModuleAdmin();
+	$about = $aboutAdmin->renderabout($paypalitemno, false);
+	
+	xoops_cp_footer();		
 ?>

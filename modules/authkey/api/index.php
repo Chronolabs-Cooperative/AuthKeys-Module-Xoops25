@@ -141,7 +141,7 @@ switch ($inner['mode'])
                 XoopsCache::write("xoopskey_".md5($inner['key']), $token, 3600 * 24 * 7 * 4 * 36);
                
                 $key = $keysHandler->get($token['id']);
-                $return = array('code'=>201, 'passed' => true, 'user-id' => $key->getVar('uid'), 'key-id' => md5($key->getVar('id').XOOPS_URL.XOOPS_DB_PASS));
+                $return = array('code'=>201, 'passed' => true, 'user-id' => $key->getVar('uid'), 'key-hash' => md5($key->getVar('id').XOOPS_URL.XOOPS_DB_PASS));
                 
                 foreach(array(md5($key->getVar('key')), md5(md5($key->getVar('key'))), md5(sha1($key->getVar('key')))) as $keyy) {
                     if ($token = XoopsCache::read("xoopskey_".$keyy)) {
@@ -222,7 +222,7 @@ switch ($inner['mode'])
                     XoopsCache::write("xoopskey_".md5(sha1($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
                 }
                 
-                if ($authkeyConfigsList['limited']==true && $overlimit == true) {
+                if ($authkeyConfigsList['limited'] == true && $overlimit == true && authkeys_checkperm(_MI_AUTHKEY_PERM_UNLIMITEDCALLS, $key->getVar('id'), $key->getVar('uid')) == false) {
                     
                     $return = array('code'=>501, 'passed' => false, 'error' => array(110 => 'Over Limit of Calling Polls to API\'s'));
                 }

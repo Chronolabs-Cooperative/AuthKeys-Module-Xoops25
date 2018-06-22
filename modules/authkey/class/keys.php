@@ -106,6 +106,13 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
         
         if ($object->isNew())
         {
+            if (authkeys_checkperm(_MI_AUTHKEY_PERM_STOPISSUINGKEY, $object->getVar('id'), $object->getVar('uid')))
+                return false;
+            
+            if ($this->getCount(new Criteria('uid', $object->getVar('uid'))) > 0)
+                if (!authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, $object->getVar('id'), $object->getVar('uid')))
+                    return false;
+                    
             $notify = true;
             $object->setVar('created', time());
             $object->setVar('issuing', time());
