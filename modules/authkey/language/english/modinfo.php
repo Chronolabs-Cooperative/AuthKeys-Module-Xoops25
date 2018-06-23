@@ -24,6 +24,9 @@
     define('_MI_AUTHKEY_SUBJECT_ISSUINGKEY','Xoops.org ~ Issuing API Key: /?xoopskey=%s');
     define('_MI_AUTHKEY_SUBJECT_LIMITREACHED','Xoops.org ~ %s Limit of API\'s Polling Reached over by: %s');
     
+    //Title Template
+    define('_MI_AUTHKEY_KEY_TITLE', 'XoopsKey for: %s');
+    
     // Periodically Based Constants
     define('_MI_AUTHKEY_PERIODICALLY_HOUR', 'Hourly');
     define('_MI_AUTHKEY_PERIODICALLY_DAY', 'Daily');

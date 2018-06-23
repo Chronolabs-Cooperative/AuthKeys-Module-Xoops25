@@ -23,8 +23,6 @@
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'mainfile.php';
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'functions.php';
 	
-	$myts =& MyTextSanitizer::getInstance();
-	
 	if (empty($authkeyModule))
 	{
 	    if (is_a($authkeyModule = xoops_getHandler('module')->getByDirname(basename(__DIR__)), "XoopsModule"))

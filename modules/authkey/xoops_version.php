@@ -93,8 +93,8 @@ if (is_object($GLOBALS['xoopsUser']))
     // Submenu Items
     $keys_handler =& xoops_getmodulehandler('keys', 'authkey');
     $criteria = new CriteriaCompo(new Criteria('uid', $GLOBALS['xoopsUser']->getVar('uid')));
-    $criteria->setOrder('created');
-    $criteria->setSort('ASC');
+    $criteria->setOrder('ASC');
+    $criteria->setSort('`title`');
     $keys = $keys_handler->getObjects($criteria, true);
     foreach($keys as $key) {
         $modversion['sub'][$i]['name'] = $key->getVar('title');

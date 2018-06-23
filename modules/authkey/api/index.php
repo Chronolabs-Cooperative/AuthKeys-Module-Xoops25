@@ -103,13 +103,13 @@ switch ($inner['mode'])
         }
         break;
     case "verify":
-        if (!strlen($inner['key']))
-            $return = array('code' => 501, 'errors' => array(108 => 'Variable required to be passed the the xoopskey in the field element: "key" ~ field element not found!'));
+        if (!strlen($inner['xoopskey']))
+            $return = array('code' => 501, 'errors' => array(108 => 'Variable required to be passed the the authkey/xoopskey in the field element: "xoopskey" ~ field element not found!'));
         if (empty($return)) {
             $keysHandler = xoops_getModuleHandler('keys', basename(dirname(__DIR__)));
-            if (!$token = XoopsCache::read("xoopskey_".md5($inner['key'])))
+            if (!$token = XoopsCache::read("xoopskey_".md5($inner['xoopskey'])))
             {
-                if (!$key = $keysHandler->getByXoopsKey($inner['key']))
+                if (!$key = $keysHandler->getByXoopsKey($inner['xoopskey']))
                     $return = array('code' => 501, 'errors' => array(109 => 'Variable not found in database being passed as the xoopskey in the field element: "key" ~ field element data not found!'));
                 if (is_object($key) && empty($return))
                 {
@@ -222,11 +222,8 @@ switch ($inner['mode'])
                     XoopsCache::write("xoopskey_".md5(sha1($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
                 }
                 
-                if ($authkeyConfigsList['limited'] == true && $overlimit == true && authkeys_checkperm(_MI_AUTHKEY_PERM_UNLIMITEDCALLS, $key->getVar('id'), $key->getVar('uid')) == false) {
-                    
-                    $return = array('code'=>501, 'passed' => false, 'error' => array(110 => 'Over Limit of Calling Polls to API\'s'));
-                }
-                    
+                if ($authkeyConfigsList['limited'] == true && $overlimit == true && !authkeys_checkperm(_MI_AUTHKEY_PERM_UNLIMITEDCALLS, $key->getVar('id'), $key->getVar('uid')) == false) 
+                    $return = array('code'=>501, 'passed' => false, 'errors' => array(110 => 'Over Limit of Calling Polls to API\'s'));                    
             }
         }
         break;

@@ -471,9 +471,9 @@ if (!class_exists("XmlDomConstruct")) {
 		{
 		  $key = xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->get($keyid);
 		  if (is_object($key) && $key->getVar('uid') != 0)
-		      $user = xoops_gethandler('users')->get($key->getVar('uid'));
+		      $user = xoops_gethandler('member')->getUser($key->getVar('uid'));
 		} elseif ($uid != 0) {
-		    $user = xoops_gethandler('users')->get($uid);
+		    $user = xoops_gethandler('member')->getUser($uid);
 		}
 		$groups = is_object($user) ? $user->getGroups() : (is_object($GLOBALS['xoopsUser']) ? $GLOBALS['xoopsUser']->getGroups() : array(XOOPS_GROUP_ANONYMOUS));
 		

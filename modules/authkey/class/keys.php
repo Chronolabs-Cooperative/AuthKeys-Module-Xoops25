@@ -101,16 +101,29 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
         return false;
     }
 
-    function insert(AuthkeyKeys $object, $force = true, $notify = false)
+    function getUIDs()
+    {
+        $sql = "SELECT DISTINCT `uid` FROM `" . $this->db->prefix('authkey_keys') . "` GROUP BY `uid`";
+        $result = $this->db->queryF($sql);
+        $return = array();
+        while($row = $this->db->fetchArray($result))
+        {
+            $return[$row['uid']] = $row['uid'];
+        }
+        return $return;
+    }
+    
+    function insert(AuthkeyKeys $object, $force = true)
     {
         
         if ($object->isNew())
         {
-            if (authkeys_checkperm(_MI_AUTHKEY_PERM_STOPISSUINGKEY, $object->getVar('id'), $object->getVar('uid')))
+            if (!authkeys_checkperm(_MI_AUTHKEY_PERM_STOPISSUINGKEY, false, $object->getVar('uid')))
                 return false;
             
-            if ($this->getCount(new Criteria('uid', $object->getVar('uid'))) > 0)
-                if (!authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, $object->getVar('id'), $object->getVar('uid')))
+            $criteria = new Criteria('uid', $object->getVar('uid'));
+            if ($this->getCount($criteria) >= 1)
+                if (!authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $object->getVar('uid')))
                     return false;
                     
             $notify = true;
@@ -152,7 +165,7 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
             xoops_load('XoopsMailer');
             $object = $this->get($keyid);
             if ($object->getVar('uid') != 0)
-                $user = xoops_getHandler('users')->get($object->getVar('uid'));
+                $user = xoops_getHandler('member')->getUser($object->getVar('uid'));
             $mailer = new XoopsMailer($GLOBALS['xoopsConfig']['sitename'], $GLOBALS['xoopsConfig']['adminemail']);
             if (is_dir(dirname(__DIR__) . DS . 'language' . DS . $GLOBALS['xoopsConfig']['language'] . DS . 'mail_templates'))
                 $mailer->setTemplateDir(dirname(__DIR__) . DS . 'language' . DS . $GLOBALS['xoopsConfig']['language'] . DS . 'mail_templates');

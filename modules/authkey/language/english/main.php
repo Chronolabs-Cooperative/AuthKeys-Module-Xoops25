@@ -18,5 +18,6 @@
  */
 
 
-	
+define('_MN_AUTHKEY_LOGINREQUIRED', 'User login is required to use this part of the module!');
+
 ?>
