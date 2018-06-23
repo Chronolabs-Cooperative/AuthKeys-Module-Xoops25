@@ -27,6 +27,13 @@ if (!is_object($GLOBALS['xoopsUser']))
     exit(0);
 }
 
+if ($GLOBALS['authkeyConfigsList']['htaccess'])
+    if (strpos($_SERVER['REQUEST_URI'], 'odules/')>0) {
+        header('HTTP/1.1 301 Moved Permanently'); 
+        header('Location: ' . XOOPS_URL . '/' . $GLOBALS['authkeyConfigsList']['baseurl'] . '/index' . $GLOBALS['authkeyConfigsList']['endofurl']);
+        exit(0);
+    }
+
 $xoopsOption['template_main'] = 'authkeys_index.html';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'header.php';
 
@@ -35,17 +42,21 @@ $criteria->setSort('`title` ASC, `name` ASC, `company`');
 $criteria->setOrder('ASC');
 
 foreach(xoops_getModuleHandler('keys', basename(__DIR__))->getObjects($criteria) as $key)   
-    $GLOBALS['xoopsTpl']->append('keys', $key->getValues(array_keys($key->vars)));
+    $GLOBALS['xoopsTpl']->append('authkeys', $key->getValues(array_keys($key->vars)));
 
 $GLOBALS['xoopsTpl']->assign('authkeys_count', xoops_getModuleHandler('keys', basename(__DIR__))->getCount($criteria));
 $GLOBALS['xoopsTpl']->assign('authkeys_allow_creating', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $GLOBALS['xoopsUser']->getVar('uid')));
 $GLOBALS['xoopsTpl']->assign('authkeys_allow_viewing', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWVIEWING, false, $GLOBALS['xoopsUser']->getVar('uid')));
+$GLOBALS['xoopsTpl']->assign('authkeys_allow_reissued', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWREISSUED, false, $GLOBALS['xoopsUser']->getVar('uid')));
 $GLOBALS['xoopsTpl']->assign('authkeys_module_version', $authkeyModule->getVar('version'));
 $GLOBALS['xoopsTpl']->assign('authkeys_module_namings', $authkeyModule->getVar('name'));
+$GLOBALS['xoopsTpl']->assign('authkeys_newkey_form', getHTMLForm('newkey'));
 
 $GLOBALS['xoTheme']->addStylesheet(XOOPS_URL . '/module/' . basename(__DIR__) . '/assets/css/style.css');
 if (is_file(XOOPS_ROOT_PATH . '/module/' . basename(__DIR__) . '/language/' . $GLOBALS['xoopsConfig']['language'] . '/style.css'))
     $GLOBALS['xoTheme']->addStylesheet(XOOPS_URL . '/module/' . basename(__DIR__) . '/language/' . $GLOBALS['xoopsConfig']['language'] . '/style.css');
 else
     $GLOBALS['xoTheme']->addStylesheet(XOOPS_URL . '/module/' . basename(__DIR__) . '/language/english/style.css');
+
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'footer.php';
         

@@ -508,6 +508,16 @@ if (!class_exists("XmlDomConstruct")) {
     		        return false;
 		        return true;
 		        break;
+    		case _MI_AUTHKEY_PERM_ALLOWEDITING:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_ALLOWEDITING_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_ALLOWDELETING:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_ALLOWDELETING_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
     		case _MI_AUTHKEY_PERM_STOPISSUINGKEY:
     		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_STOPISSUINGKEY_ID, $groups, $modid))
     		        return false;

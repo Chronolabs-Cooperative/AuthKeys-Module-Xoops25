@@ -47,6 +47,7 @@ $modversion['sqlfile']['mysql'] = 'sql/mysql.sql';
 // Tables created by sql file (without prefix!)
 $modversion['tables'][0]	=  'authkey_keys';
 $modversion['tables'][1]	=  'authkey_statistics';
+$modversion['tables'][2]	=  'authkey_users';
 
 // Admin things
 $modversion['hasAdmin']		= true;

@@ -20,4 +20,9 @@
 
 define('_MN_AUTHKEY_LOGINREQUIRED', 'User login is required to use this part of the module!');
 
+// index.html ~ language constants
+define('_MN_AUTHKEY_INDEX_PA', 'Below is the Xoopskeys/Authkeys that have been generated and are active on the system for the current user logged in!');
+define('_MN_AUTHKEY_INDEX_H2A', 'Create Xoopskeys/Authkeys for API\'s Services!');
+define('_MN_AUTHKEY_INDEX_H2B', 'Xoopskeys/Authkeys for REST API Services!');
+
 ?>

@@ -64,6 +64,20 @@ class AuthkeyPollingPreload extends XoopsPreloadItem
                 if ($key->getVar('stats-year') <= time())
                     $key->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
                 
+                $user = xoops_getModuleHandler('users', basename(dirname(__DIR__)))->get($key->getVar('uid'));
+                if ($user->getVar('stats-hour') <= time())
+                    $user->setVar('stats-hour', time() + (3600));
+                if ($user->getVar('stats-day') <= time())
+                    $user->setVar('stats-day', time() + (3600 * 24));
+                if ($user->getVar('stats-week') <= time())
+                    $user->setVar('stats-week', time() + (3600 * 24 * 7));
+                if ($user->getVar('stats-month') <= time())
+                    $user->setVar('stats-month', time() + (3600 * 24 * 7 * 4));
+                if ($user->getVar('stats-quarter') <= time())
+                    $user->setVar('stats-quarter', time() + (3600 * 24 * 7 * 4 * 3));
+                if ($user->getVar('stats-year') <= time())
+                    $user->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
+                
                 foreach(array(md5($key->getVar('key')), md5(md5($key->getVar('key'))), md5(sha1($key->getVar('key')))) as $keyy) {
                     if ($token = XoopsCache::read("xoopskey_".$keyy)) {           
                         $key->setVar('calls-hour', $key->getVar('calls-hour') + $token['polling']);
@@ -72,6 +86,14 @@ class AuthkeyPollingPreload extends XoopsPreloadItem
                         $key->setVar('calls-month', $key->getVar('calls-month') + $token['polling']);
                         $key->setVar('calls-quarter', $key->getVar('calls-quarter') + $token['polling']);
                         $key->setVar('calls-year', $key->getVar('calls-year') + $token['polling']);
+                        
+                        $user->setVar('calls-hour', $user->getVar('calls-hour') + $token['polling']);
+                        $user->setVar('calls-day', $user->getVar('calls-day') + $token['polling']);
+                        $user->setVar('calls-week', $user->getVar('calls-week') + $token['polling']);
+                        $user->setVar('calls-month', $user->getVar('calls-month') + $token['polling']);
+                        $user->setVar('calls-quarter', $user->getVar('calls-quarter') + $token['polling']);
+                        $user->setVar('calls-year', $user->getVar('calls-year') + $token['polling']);
+                        
                         $token['polling'] = 0;
                         
                         $overlimit = false;
@@ -107,11 +129,42 @@ class AuthkeyPollingPreload extends XoopsPreloadItem
                                 $overlimit = true;
                                 $key->setVar('overs-year', $key->getVar('calls-year') - $key->getVar('limit-year'));
                             }
+                            if ($user->getVar('limit-hour') < $user->getVar('calls-hour'))
+                            {
+                                $overlimit = true;
+                                $user->setVar('overs-hour', $user->getVar('calls-hour') - $user->getVar('limit-hour'));
+                            }
+                            if ($user->getVar('limit-day') < $user->getVar('calls-day'))
+                            {
+                                $overlimit = true;
+                                $user->setVar('overs-day', $user->getVar('calls-day') - $user->getVar('limit-day'));
+                            }
+                            if ($user->getVar('limit-week') < $user->getVar('calls-week'))
+                            {
+                                $overlimit = true;
+                                $user->setVar('overs-week', $user->getVar('calls-week') - $user->getVar('limit-week'));
+                            }
+                            if ($user->getVar('limit-month') < $user->getVar('calls-month'))
+                            {
+                                $overlimit = true;
+                                $user->setVar('overs-month', $user->getVar('calls-month') - $user->getVar('limit-month'));
+                            }
+                            if ($user->getVar('limit-quarter') < $user->getVar('calls-quarter'))
+                            {
+                                $overlimit = true;
+                                $user->setVar('overs-quarter', $user->getVar('calls-quarter') - $user->getVar('limit-quarter'));
+                            }
+                            if ($user->getVar('limit-year') < $user->getVar('calls-year'))
+                            {
+                                $overlimit = true;
+                                $user->setVar('overs-year', $user->getVar('calls-year') - $user->getVar('limit-year'));
+                            }
                         }
     
                         XoopsCache::write("xoopskey_".$keyy, $token, 3600 * 24 * 7 * 4 * 36);
                     }
                 }
+                @xoops_getModuleHandler('users', basename(dirname(__DIR__)))->insert($user, true);
                 @xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->insert($key, true);
             }
         }

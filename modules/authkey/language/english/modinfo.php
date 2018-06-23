@@ -123,8 +123,29 @@
 	define('_MI_AUTHKEY_PERM_ALLOWREISSUED_ID', 10040);
 	define('_MI_AUTHKEY_PERM_ALLOWVIEWING', 'viewing');
 	define('_MI_AUTHKEY_PERM_ALLOWVIEWING_ID', 10050);
+	define('_MI_AUTHKEY_PERM_ALLOWEDITING', 'editing');
+	define('_MI_AUTHKEY_PERM_ALLOWEDITING_ID', 10060);
+	define('_MI_AUTHKEY_PERM_ALLOWDELETING', 'deleting');
+	define('_MI_AUTHKEY_PERM_ALLOWDELETING_ID', 10070);
 	define('_MI_AUTHKEY_PERM_STOPISSUINGKEY', 'noissuing');
-	define('_MI_AUTHKEY_PERM_STOPISSUINGKEY_ID', 10060);
+	define('_MI_AUTHKEY_PERM_STOPISSUINGKEY_ID', 10080);
+	define('_MI_AUTHKEY_PERM_EMAILUSERMONTHLY', 'usermonthly');
+	define('_MI_AUTHKEY_PERM_EMAILUSERMONTHLY_ID', 10090);
+	define('_MI_AUTHKEY_PERM_EMAILUSER6MONTHLY', 'user6monthly');
+	define('_MI_AUTHKEY_PERM_EMAILUSER6MONTHLY_ID', 10110);
+	define('_MI_AUTHKEY_PERM_EMAILUSER12MONTHLY', 'user12monthly');
+	define('_MI_AUTHKEY_PERM_EMAILUSER12MONTHLY_ID', 10120);
+	define('_MI_AUTHKEY_PERM_EMAILUSER24MONTHLY', 'user24monthly');
+	define('_MI_AUTHKEY_PERM_EMAILUSER24MONTHLY_ID', 10130);
+	define('_MI_AUTHKEY_PERM_EMAILOWNERMONTHLY', 'ownermonthly');
+	define('_MI_AUTHKEY_PERM_EMAILOWNERMONTHLY_ID', 10140);
+	define('_MI_AUTHKEY_PERM_EMAILOWNER6MONTHLY', 'owner6monthly');
+	define('_MI_AUTHKEY_PERM_EMAILOWNER6MONTHLY_ID', 10150);
+	define('_MI_AUTHKEY_PERM_EMAILOWNER12MONTHLY', 'owner12monthly');
+	define('_MI_AUTHKEY_PERM_EMAILOWNER12MONTHLY_ID', 10160);
+	define('_MI_AUTHKEY_PERM_EMAILOWNER24MONTHLY', 'owner24monthly');
+	define('_MI_AUTHKEY_PERM_EMAILOWNER24MONTHLY_ID', 10170);
+	
 	
 	// Permission Descriptions
 	define('_MI_AUTHKEY_PERM_FORMTITLE', 'Permissions for AuthKeys/XoopsKeys!');
@@ -134,7 +155,18 @@
 	define('_MI_AUTHKEY_PERM_ALLOWCREATING_DESC', 'Allow creation of 2nd+ AuthKey/XoopsKey');
 	define('_MI_AUTHKEY_PERM_ALLOWREISSUED_DESC', 'Allow Re-issuing of key\'s');
 	define('_MI_AUTHKEY_PERM_ALLOWVIEWING_DESC', 'Allow Viewing + Statistics profiles');
+	define('_MI_AUTHKEY_PERM_ALLOWEDITING_DESC', 'Allow Editing of Xoopskey/Authkey');
+	define('_MI_AUTHKEY_PERM_ALLOWDELETING_DESC', 'Allow Deleting of Xoopskey/Authkey');
 	define('_MI_AUTHKEY_PERM_STOPISSUINGKEY_DESC', 'Stop all issuing of keys to this group');
+	define('_MI_AUTHKEY_PERM_EMAILUSERMONTHLY_DESC', 'Email Monthly User *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILUSER6MONTHLY_DESC', 'Email 6 Month\'s User *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILUSER12MONTHLY_DESC', 'Email Yearly User *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILUSER24MONTHLY_DESC', 'Email Biannual User *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILOWNERMONTHLY_DESC', 'Email Monthly Key Owner\'s *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILOWNER6MONTHLY_DESC', 'Email 6 Month\'s Key Owner\'s *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILOWNER12MONTHLY_DESC', 'Email Yearly Key Owner\'s *.csv Report');
+	define('_MI_AUTHKEY_PERM_EMAILOWNER24MONTHLY_DESC', 'Email Biannual Key Owner\'s *.csv Report');
+	
 	// MENUs
 	define('_MI_AUTHKEY_ADMENU0','Dashboard');
 	define('_MI_AUTHKEY_ADMENU8','About XCentre');

@@ -36,6 +36,10 @@ CREATE TABLE `authkey_keys` (
 	`stats-month` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`stats-quarter` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`stats-year` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-monthly` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-halfyear` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-fullyear` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-biannual` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`created` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`issuing` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`quoting` INT(12) UNSIGNED NOT NULL DEFAULT '0',
@@ -55,7 +59,7 @@ CREATE TABLE `authkey_statistics` (
 	`id` MEDIUMINT(196) UNSIGNED NOT NULL AUTO_INCREMENT,    
 	`key-id` MEDIUMINT(32) UNSIGNED NOT NULL DEFAULT '0',
 	`uid` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',            
-	`type` ENUM('hour','day','week','month','quarter','year') DEFAULT 'hour',
+	`type` ENUM('hour','day','week','month','quarter','year', 'user-hour','user-day','user-week','user-month','user-quarter','user-year') DEFAULT 'hour',
 	`calls` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`limit` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
 	`over` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
@@ -63,4 +67,48 @@ CREATE TABLE `authkey_statistics` (
 	`finished` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`),                               
 	KEY `search` (`uid`,`type`,`begining`,`finished`)              
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+#
+# Table structure for table authkey_keys
+#
+#Create Table
+
+CREATE TABLE `authkey_users` (                   
+	`uid` MEDIUMINT(32) UNSIGNED NOT NULL AUTO_INCREMENT,  
+	`uname` VARCHAR(128) NOT NULL DEFAULT '',
+	`calls-hour` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`calls-day` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`calls-week` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`calls-month` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`calls-quarter` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`calls-year` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`overs-hour` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`overs-day` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`overs-week` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`overs-month` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`overs-quarter` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`overs-year` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`limit-hour` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '200',
+	`limit-day` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '4800',
+	`limit-week` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '33600',
+	`limit-month` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '134400',
+	`limit-quarter` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '403200',
+	`limit-year` MEDIUMINT(12) UNSIGNED NOT NULL DEFAULT '1612800',
+	`stats-hour` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`stats-day` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`stats-week` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`stats-month` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`stats-quarter` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`stats-year` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-monthly` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-halfyear` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-fullyear` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`report-biannual` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`created` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`quoting` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	`emailed` INT(12) UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (`uid`),
+	KEY `unameuid` (`uname`,`uid`),
+	KEY `search` (`uname`,`uid`,`created`,`emailed`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;

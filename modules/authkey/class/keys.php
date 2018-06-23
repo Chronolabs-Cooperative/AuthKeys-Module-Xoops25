@@ -65,6 +65,10 @@ class AuthkeyKeys extends XoopsObject
 		$this->initVar('stats-month', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-quarter', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-year', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-month', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-quarter', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-year', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-biannual', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('created', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('issuing', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('quoting', XOBJ_DTYPE_INT, null, false);
@@ -137,6 +141,32 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
             $object->setVar('limit-month', $authkeyConfigsList['limit-month']);
             $object->setVar('limit-quarter', $authkeyConfigsList['limit-quarter']);
             $object->setVar('limit-year', $authkeyConfigsList['limit-year']);
+            
+            $object->setVar('report-monthly', time() + (3600 * 24 * 7 * 4));
+            $object->setVar('report-halfyear', time() + (3600 * 24 * 7 * 4 * 6));
+            $object->setVar('report-fullyear', time() + (3600 * 24 * 7 * 4 * 12));
+            $object->setVar('report-biannual', time() + (3600 * 24 * 7 * 4 * 24));
+            
+            $usersHandler = xoops_getModuleHandler('users', basename(dirname(__DIR__)));
+            if (!$user = $usersHandler->get($object->getVar('uid')))
+            {
+                $user = $usersHandler->create();
+                $user->setVar('uid', $object->getVar('uid'));
+                $user->setVar('report-monthly', time() + (3600 * 24 * 7 * 4));
+                $user->setVar('report-halfyear', time() + (3600 * 24 * 7 * 4 * 6));
+                $user->setVar('report-fullyear', time() + (3600 * 24 * 7 * 4 * 12));
+                $user->setVar('report-biannual', time() + (3600 * 24 * 7 * 4 * 24));
+                $user->setVar('created', time());
+            }
+            
+            $user->setVar('limit-hour', $user->getVar('limit-hour') + $object->getVar('limit-hour'));
+            $user->setVar('limit-day', $user->getVar('limit-day') + $object->getVar('limit-day'));
+            $user->setVar('limit-week', $user->getVar('limit-week') + $object->getVar('limit-week'));
+            $user->setVar('limit-month', $user->getVar('limit-month') + $object->getVar('limit-month'));
+            $user->setVar('limit-quarter', $user->getVar('limit-quarter') + $object->getVar('limit-quarter'));
+            $user->setVar('limit-year', $user->getVar('limit-year') + $object->getVar('limit-year'));
+            @$usersHandler->insert($user, true);
+            
         } else {
             $oldobj = $this->get($object->getVar('id'));
             foreach(array('hour', 'day', 'week', 'month', 'quarter', 'year') as $type)

@@ -70,21 +70,30 @@ switch ($inner['mode'])
         $criteria = new CriteriaCompo(new Criteria('uname', $inner['uname']));
         $criteria->add($criteriap);
         
-        if ($userObjs = $usersHandler->getObjects($criteria) && isset($userObjs[0]))
+        if ($userObjs = $usersHandler->getObjects($criteria) && !empty($userObjs[0]))
         {
-            if (!strlen($inner['title']))
+            $keysHandler = xoops_getModuleHandler('keys', basename(dirname(__DIR__)));
+            $criteria = new Criteria('uid', $userObjs[0]->getVar('uid'));
+            if ($keysHandler->getCount($criteria) >= 1)
+                if (!authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $userObjs[0]->getVar('uid')))
+                {
+                    $keys = $keysHandler->getObjects($criteria);
+                    if (!empty($keys[0]))
+                        $return = array('code' => 201, 'xoopskey' => $keys[0]->getVar('key'), 'issuing' => $keys[0]->getVar('issuing'));
+                }
+                
+            if (empty($return) && !strlen($inner['title']))
                 $return = array('code' => 501, 'errors' => array(102 => 'Variable required to be passed the title of the key in "title" ~ field element not found!'));
-            elseif (!strlen($inner['name']))
+            elseif (empty($return) && !strlen($inner['name']))
                 $return = array('code' => 501, 'errors' => array(103 => 'Variable required to be passed the individual name of the owner of the key in "name" ~ field element not found!'));
-            elseif (!strlen($inner['url']))
+            elseif (empty($return) && !strlen($inner['url']))
                 $return = array('code' => 501, 'errors' => array(105 => 'Variable required to be passed the url of the owning site of the key in "url" ~ field element not found!'));
-            elseif (!strlen($inner['email']))
+            elseif (empty($return) && !strlen($inner['email']))
                 $return = array('code' => 501, 'errors' => array(106 => 'Variable required to be passed the owning sites email of the key in "email" ~ field element not found!'));
-            elseif (checkEmail($inner['email']))
+            elseif (empty($return) && checkEmail($inner['email']))
                 $return = array('code' => 501, 'errors' => array(107 => 'Variable required to be passed not a valid owning sites email in the field element "email" ~ field element invalid!'));
                 
             if (empty($return)) {
-                $keysHandler = xoops_getModuleHandler('keys', basename(dirname(__DIR__)));
                 
                 $object = $keysHandler->create();
                 $object->setVar('title', $inner['title']);
@@ -95,7 +104,7 @@ switch ($inner['mode'])
                 $object->setVar('uid', $userObjs[0]->getVar('uid'));
                 
                 $key = $keysHandler->get($keysHandler->insert($object, true));
-                $return = array('code' => 201, 'authkey' => $key->getVar('key'), 'issuing' => $key->getVar('issuing'));
+                $return = array('code' => 201, 'xoopskey' => $key->getVar('key'), 'issuing' => $key->getVar('issuing'));
             }
             
         } else {
@@ -126,6 +135,21 @@ switch ($inner['mode'])
                     if ($key->getVar('stats-year') < time())
                         $key->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
                     
+                    $user = xoops_getModuleHandler('users', basename(dirname(__DIR__)))->get($key->getVar('uid'));
+                    if ($user->getVar('stats-hour') <= time())
+                        $user->setVar('stats-hour', time() + (3600));
+                    if ($user->getVar('stats-day') <= time())
+                        $user->setVar('stats-day', time() + (3600 * 24));
+                    if ($user->getVar('stats-week') <= time())
+                        $user->setVar('stats-week', time() + (3600 * 24 * 7));
+                    if ($user->getVar('stats-month') <= time())
+                        $user->setVar('stats-month', time() + (3600 * 24 * 7 * 4));
+                    if ($user->getVar('stats-quarter') <= time())
+                        $user->setVar('stats-quarter', time() + (3600 * 24 * 7 * 4 * 3));
+                    if ($user->getVar('stats-year') <= time())
+                        $user->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
+                    
+                    @xoops_getModuleHandler('users', basename(dirname(__DIR__)))->insert($user, true);
                     $key = $keysHandler->get($keyid = $keysHandler->insert($key, true));
                     $data = $key->getValues(array_keys($key->vars));
                     $data['polling'] = 0;
@@ -137,15 +161,16 @@ switch ($inner['mode'])
                 }
             } else {
                 $token['polling'] = $token['polling'] + 1;
-                $token['polled'] = time();
+                $token['polled-last'] = $token['polled'];
+                $token['polled'] = time() + $authkeyConfigsList['polling-seconds'];
                 XoopsCache::write("xoopskey_".md5($inner['key']), $token, 3600 * 24 * 7 * 4 * 36);
                
                 $key = $keysHandler->get($token['id']);
-                $return = array('code'=>201, 'passed' => true, 'user-id' => $key->getVar('uid'), 'key-hash' => md5($key->getVar('id').XOOPS_URL.XOOPS_DB_PASS));
+                $return = array('code'=>201, 'passed' => true, 'user-hash' => md5($key->getVar('uid').XOOPS_URL.XOOPS_DB_PASS), 'key-hash' => md5($key->getVar('id').XOOPS_URL.XOOPS_DB_PASS));
                 
                 foreach(array(md5($key->getVar('key')), md5(md5($key->getVar('key'))), md5(sha1($key->getVar('key')))) as $keyy) {
                     if ($token = XoopsCache::read("xoopskey_".$keyy)) {
-                        if ($token['polled'] < time() - $authkeyConfigsList['polling-seconds'] || $key->getVar('stats-hour') < time() || $key->getVar('stats-day') < time() || $key->getVar('stats-week') < time() || $key->getVar('stats-month') < time() || $key->getVar('stats-quarter') < time() || $key->getVar('stats-year') < time())
+                        if ($token['polled-last'] < time() || $key->getVar('stats-hour') < time() || $key->getVar('stats-day') < time() || $key->getVar('stats-week') < time() || $key->getVar('stats-month') < time() || $key->getVar('stats-quarter') < time() || $key->getVar('stats-year') < time())
                         {
                             $key = $keysHandler->get($token['id']);
                             $key->setVar('calls-hour', $key->getVar('calls-hour') + $token['polling']);
@@ -154,6 +179,14 @@ switch ($inner['mode'])
                             $key->setVar('calls-month', $key->getVar('calls-month') + $token['polling']);
                             $key->setVar('calls-quarter', $key->getVar('calls-quarter') + $token['polling']);
                             $key->setVar('calls-year', $key->getVar('calls-year') + $token['polling']);
+                            
+                            $user = xoops_getModuleHandler('users', basename(dirname(__DIR__)))->get($key->getVar('uid'));
+                            $user->setVar('calls-hour', $user->getVar('calls-hour') + $token['polling']);
+                            $user->setVar('calls-day', $user->getVar('calls-day') + $token['polling']);
+                            $user->setVar('calls-week', $user->getVar('calls-week') + $token['polling']);
+                            $user->setVar('calls-month', $user->getVar('calls-month') + $token['polling']);
+                            $user->setVar('calls-quarter', $user->getVar('calls-quarter') + $token['polling']);
+                            $user->setVar('calls-year', $user->getVar('calls-year') + $token['polling']);
                             $token['polling'] = 0;
                             
                             $overlimit = false;
@@ -189,6 +222,36 @@ switch ($inner['mode'])
                                     $overlimit = true;
                                     $key->setVar('overs-year', $key->getVar('calls-year') - $key->getVar('limit-year'));
                                 }
+                                if ($user->getVar('limit-hour') < $user->getVar('calls-hour'))
+                                {
+                                    $overlimit = true;
+                                    $user->setVar('overs-hour', $user->getVar('calls-hour') - $user->getVar('limit-hour'));
+                                }
+                                if ($user->getVar('limit-day') < $user->getVar('calls-day'))
+                                {
+                                    $overlimit = true;
+                                    $user->setVar('overs-day', $user->getVar('calls-day') - $user->getVar('limit-day'));
+                                }
+                                if ($user->getVar('limit-week') < $user->getVar('calls-week'))
+                                {
+                                    $overlimit = true;
+                                    $user->setVar('overs-week', $user->getVar('calls-week') - $user->getVar('limit-week'));
+                                }
+                                if ($user->getVar('limit-month') < $user->getVar('calls-month'))
+                                {
+                                    $overlimit = true;
+                                    $user->setVar('overs-month', $user->getVar('calls-month') - $user->getVar('limit-month'));
+                                }
+                                if ($user->getVar('limit-quarter') < $user->getVar('calls-quarter'))
+                                {
+                                    $overlimit = true;
+                                    $user->setVar('overs-quarter', $user->getVar('calls-quarter') - $user->getVar('limit-quarter'));
+                                }
+                                if ($user->getVar('limit-year') < $user->getVar('calls-year'))
+                                {
+                                    $overlimit = true;
+                                    $user->setVar('overs-year', $user->getVar('calls-year') - $user->getVar('limit-year'));
+                                }
                             }
                                 
                             $key = $keysHandler->get($keyid = $keysHandler->insert($key, true));
@@ -213,6 +276,22 @@ switch ($inner['mode'])
                     if ($key->getVar('stats-year') < time())
                         $key->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
                 
+                    $user = xoops_getModuleHandler('users', basename(dirname(__DIR__)))->get($key->getVar('uid'));
+                    if ($user->getVar('stats-hour') <= time())
+                        $user->setVar('stats-hour', time() + (3600));
+                    if ($user->getVar('stats-day') <= time())
+                        $user->setVar('stats-day', time() + (3600 * 24));
+                    if ($user->getVar('stats-week') <= time())
+                        $user->setVar('stats-week', time() + (3600 * 24 * 7));
+                    if ($user->getVar('stats-month') <= time())
+                        $user->setVar('stats-month', time() + (3600 * 24 * 7 * 4));
+                    if ($user->getVar('stats-quarter') <= time())
+                        $user->setVar('stats-quarter', time() + (3600 * 24 * 7 * 4 * 3));
+                    if ($user->getVar('stats-year') <= time())
+                        $user->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
+                    
+                    @xoops_getModuleHandler('users', basename(dirname(__DIR__)))->insert($user, true);
+                    
                     $key = $keysHandler->get($keyid = $keysHandler->insert($key, true));
                     $data = $key->getValues(array_keys($key->vars));
                     $data['polling'] = 0;

@@ -1,48 +1,33 @@
-<{if $xoConfig.breadcrumb}><{include file="db:xcenter_breadcrumb.html"}><{/if}>
-<div style="float:right; clear:none">
-<{if $xoConfig.share}><div style="float:left;"><{$xoConfig.sharecode}></div><{/if}>
-<{if $xoConfig.rss && $catid}><div style="float:right;">&nbsp;<a href="<{$xoops_url}>/modules/xcenter/rss.php?catid=<{$catid}>"><img src="<{$xoops_url}>/modules/xcenter/images/rss.png"></a></div><{/if}>
-</div>
-<p style="clear:both; height:2px;">&nbsp;</p>
-<h1><{$xcenter_pagetitle}></h1>
-<div class="xoXcenter" id="xoXcenter">
-<{$xcenter_text}>
-</div>
-<div class="xoIconBar" id="xoIconBar">
-<{if $xoConfig.writtenby}><{$smarty.const._XTR_WRITTENBY}><a href="<{$xoops_url}>/userinfo.php?uid=<{$xoAuthor.uid}>"><{if $xoAuthor.name}><{$xoAuthor.name}><{else}><{$xoAuthor.uname}><{/if}></a>&nbsp;<{/if}><{$xoPubdate}>&nbsp;
-<{if $xoConfig.print}><a href="<{$xoops_url}>/modules/xcenter/print.php?storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/print.png"></a>&nbsp;<{/if}>
-<{if $xoConfig.pdf}><a href="<{$xoops_url}>/modules/xcenter/pdf.php?storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/pdf.png"></a>&nbsp;<{/if}>
-<div style="float:right; clear:none">
-<{if $xoops_isadmin}>
-<{if $xoXcenter.storyid}>
-<a href="<{$xoops_url}>/modules/xcenter/admin/index.php?op=edit&fct=xcenter&storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/edit.png"></a>&nbsp;
-<a href="<{$xoops_url}>/modules/xcenter/admin/index.php?op=delete&fct=xcenter&storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/delete.png"></a>&nbsp;
-<a href="<{$xoops_url}>/modules/xcenter/admin/index.php?op=copy&fct=xcenter&storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/copy.png"></a>&nbsp;
-<{/if}>
-<{else}>
-<{if $xoXcenter.storyid}>
-<{if $xoXcenter.hasEdit}><a href="<{$xoops_url}>/modules/xcenter/manage.php?op=edit&fct=xcenter&storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/edit.png"></a>&nbsp;<{/if}>
-<{if $xoXcenter.hasDelete}><a href="<{$xoops_url}>/modules/xcenter/manage.php?op=delete&fct=xcenter&storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/delete.png"></a>&nbsp;<{/if}>
-<{if $xoXcenter.hasCopy}><a href="<{$xoops_url}>/modules/xcenter/manage.php?op=copy&fct=xcenter&storyid=<{$xoXcenter.storyid}>"><img src="<{$xoops_url}>/modules/xcenter/images/copy.png"></a>&nbsp;<{/if}>
-<{/if}>
-<{/if}>
-</div></div>
-<{if $tagbar}><{include file="db:tag_bar.html"}><{/if}>
-<{if $xoXcenter.nocomments == 0}>
-<br /><br /><br />
-<div style="text-align: center; padding: 3px; margin: 3px;">
-  <{$commentsnav}>
-  <{$lang_notice}>
-</div> 
-<div style="margin: 3px; padding: 3px;">
-<!-- start comments loop -->
-<{if $comment_mode == "flat"}>
-  <{include file="db:system_comments_flat.html"}>
-<{elseif $comment_mode == "thread"}>
-  <{include file="db:system_comments_thread.html"}>
-<{elseif $comment_mode == "nest"}>
-  <{include file="db:system_comments_nest.html"}>
-<{/if}>
-<!-- end comments loop -->
+<h1><{$authkeys_module_namings}> ~ v<{$authkeys_module_version}></h1>
+<p><{$smart.const._MN_AUTHKEY_INDEX_PA}></p>
+<{if $authkeys_count == 0 || ($authkeys_count >= 1 && $authkeys_allow_creating == true)}>
+<h2><{$smart.const._MN_AUTHKEY_INDEX_H2A}></h2>
+<div style="margin-left: 45px; margin-right: 45px; margin-bottom: 15px; margin-top: 7px; font-size: 1.1183111em;">
+	<div style="padding: 6px; border: 3px dashed black;">
+		<{$authkeys_newkey_form}>
+	</div>
 </div>
 <{/if}>
+<{if $authkeys_count > 0}>
+<h2><{$smart.const._MN_AUTHKEY_INDEX_H2B}></h2>
+<table>
+	<tr class='head'>
+		<td class='head' style='text-align: center;'><{$smart.const._MN_AUTHKEY_INDEX_TDA}></td>
+		<td class='head' style='text-align: center;'><{$smart.const._MN_AUTHKEY_INDEX_TDB}></td>
+		<td class='head' style='text-align: center;'><{$smart.const._MN_AUTHKEY_INDEX_TDC}></td>
+		<td class='head' style='text-align: center;'><{$smart.const._MN_AUTHKEY_INDEX_TDD}></td>
+		<td class='head' style='text-align: center;'><{$smart.const._MN_AUTHKEY_INDEX_TDE}></td>
+		<td class='head' style='text-align: center;'><{$smart.const._MN_AUTHKEY_INDEX_TDF}></td>
+		<td class='head' style='text-align: right;'><{$smart.const._MN_AUTHKEY_INDEX_TDG}></td>
+	</tr>
+	<{foreach from=$authkeys item=key}>
+	<tr class='<{cycle values='even,odd'}>'>
+		<td style='text-align: center; font-weight: 700;'><{$key.key}></td>
+		<td style='text-align: center;'><{$key.title}></td>
+		<td style='text-align: center;'><{$key.name}></td>
+		<td style='text-align: center;'><{$key.calls-day}> / <{$key.limit-day}><{if $key.overs-day > 0}>&nbsp;<font style='color: red; font-weight: 900;'>( <{$key.overs-day}> )</font><{/if}></td>
+		<td style='text-align: center;'><{$key.calls-week}> / <{$key.limit-week}><{if $key.overs-week > 0}>&nbsp;<font style='color: red; font-weight: 900;'>( <{$key.overs-week}> )</font><{/if}></td>
+		<td style='text-align: center;'><{$key.calls-month}> / <{$key.limit-month}><{if $key.overs-month > 0}>&nbsp;<font style='color: red; font-weight: 900;'>( <{$key.overs-month}> )</font><{/if}></td>
+		<td style='text-align: right;'><{$smart.const._MN_AUTHKEY_INDEX_TDG}></td>
+	</tr>
+</table>

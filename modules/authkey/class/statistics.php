@@ -36,7 +36,7 @@ class AuthkeyStatistics extends XoopsObject
         $this->initVar('id', XOBJ_DTYPE_INT, null, false);
         $this->initVar('key-id', XOBJ_DTYPE_INT, null, false);
         $this->initVar('uid', XOBJ_DTYPE_INT, null, false);
-        $this->initVar('type', XOBJ_DTYPE_ENUM, null, false, false, false, false, array('hour','day','week','month','quarter','year'));
+        $this->initVar('type', XOBJ_DTYPE_ENUM, null, false, false, false, false, array('hour','day','week','month','quarter','year', 'user-hour','user-day','user-week','user-month','user-quarter','user-year'));
         $this->initVar('calls', XOBJ_DTYPE_INT, null, false);
         $this->initVar('limit', XOBJ_DTYPE_INT, null, false);
         $this->initVar('over', XOBJ_DTYPE_INT, null, false);
