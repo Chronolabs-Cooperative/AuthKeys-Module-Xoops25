@@ -18,10 +18,12 @@
  */
 
 
-    global $authkeyModule, $op, $mode, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions, $groups;
+    global $authkeyModule, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions;
     
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'mainfile.php';
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'functions.php';
+	
+	xoops_loadLanguage('modinfo', basename(__DIR__));
 	
 	if (empty($authkeyModule))
 	{

@@ -22,7 +22,7 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARA
 
 function getHTMLForm($mode = '')
 {
-    global $authkeyModule, $op, $mode, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions, $groups;
+    
     
     $form = array();
     switch ($mode)
@@ -122,6 +122,7 @@ function getHTMLForm($mode = '')
             $form[] = "\t</table>";
             $form[] = "</form>";
             break;
+    
         case "verify":
             $form[] = "<form name='new-domain' method=\"POST\" enctype=\"multipart/form-data\" action=\"" . ($authkeyConfigsList['htaccess'] == true ? XOOPS_URL . '/' . $authkeyConfigsList['baseurl'] . '/verify.api' : XOOPS_URL . '/modules/' . basename(dirname(__DIR__)) . '/api/?mode=verify') . '">';
             $form[] = "\t<table class='new-domain' id='auth-domain' style='vertical-align: top !important; min-width: 98%;'>";
@@ -152,6 +153,70 @@ function getHTMLForm($mode = '')
             $form[] = "\t\t\t<td colspan='3' style='padding-left:64px;'>";
             $form[] = "\t\t\t\t<input type='hidden' value='verify' name='mode'>";
             $form[] = "\t\t\t\t<input type='submit' value='Verify and Count Polling of XOOPS Auth-Key' name='submit' style='padding:11px; font-size:122%;'>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t\t\t<td colspan='3' style='padding-top: 8px; padding-bottom: 14px; padding-right:35px; text-align: right;'>";
+            $form[] = "\t\t\t\t<font style='color: rgb(250,0,0); font-size: 139%; font-weight: bold;'>* </font><font  style='color: rgb(10,10,10); font-size: 99%; font-weight: bold'><em style='font-size: 76%'>~ Required Field for Form Submission</em></font>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t</table>";
+            $form[] = "</form>";
+            break;
+            
+        case "newkey":
+            
+            $form[] = "<form name='new-key' method=\"POST\" enctype=\"multipart/form-data\" action=\"" . ($authkeyConfigsList['htaccess'] == true ? XOOPS_URL . '/' . $authkeyConfigsList['baseurl'] . '/post.api?mode=newkey' : XOOPS_URL . '/modules/' . basename(dirname(__DIR__)) . '/post.php?mode=newkey') . '">';
+            $form[] = "\t<table class='new-key' id='new-key' style='vertical-align: top !important; min-width: 98%;'>";
+            $form[] = "\t\t\t<td style='width: 320px;'>";
+            $form[] = "\t\t\t\t<label for='title'>Title for Key (a Name for it):&nbsp;<font style='color: rgb(250,0,0); font-size: 139%; font-weight: bold'>*</font></label>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>";
+            $form[] = "\t\t\t\t<input type='textbox' name='title' id='title' size='41' />&nbsp;&nbsp;";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>&nbsp;</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t\t\t<td style='width: 320px;'>";
+            $form[] = "\t\t\t\t<label for='name'>Individual name key is for:&nbsp;<font style='color: rgb(250,0,0); font-size: 139%; font-weight: bold'>*</font></label>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>";
+            $form[] = "\t\t\t\t<input type='textbox' name='name' id='name' size='41' />&nbsp;&nbsp;";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>&nbsp;</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t\t\t<td style='width: 320px;'>";
+            $form[] = "\t\t\t\t<label for='company'>Company name key is for:&nbsp;</label>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>";
+            $form[] = "\t\t\t\t<input type='textbox' name='company' id='company' size='41' />&nbsp;&nbsp;";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>&nbsp;</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t\t\t<td style='width: 320px;'>";
+            $form[] = "\t\t\t\t<label for='url'>URL Key is for:&nbsp;<font style='color: rgb(250,0,0); font-size: 139%; font-weight: bold'>*</font></label>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>";
+            $form[] = "\t\t\t\t<input type='textbox' name='url' id='url' size='41' />&nbsp;&nbsp;";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>&nbsp;</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t\t\t<td style='width: 320px;'>";
+            $form[] = "\t\t\t\t<label for='email'>Individual/Owner of Key Email for Notices:&nbsp;<font style='color: rgb(250,0,0); font-size: 139%; font-weight: bold'>*</font></label>";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>";
+            $form[] = "\t\t\t\t<input type='textbox' name='email' id='email' size='41' />&nbsp;&nbsp;";
+            $form[] = "\t\t\t</td>";
+            $form[] = "\t\t\t<td>&nbsp;</td>";
+            $form[] = "\t\t</tr>";
+            $form[] = "\t\t<tr>";
+            $form[] = "\t\t\t<td colspan='3' style='padding-left:64px;'>";
+            $form[] = "\t\t\t\t<input type='hidden' value='newkey' name='mode'>";
+            $form[] = "\t\t\t\t<input type='submit' value='Generate New XOOPS Auth Key' name='submit' style='padding:11px; font-size:122%;'>";
             $form[] = "\t\t\t</td>";
             $form[] = "\t\t</tr>";
             $form[] = "\t\t<tr>";
@@ -523,7 +588,47 @@ if (!class_exists("XmlDomConstruct")) {
     		        return false;
 		        return true;
 		        break;
-		        
+    		case _MI_AUTHKEY_PERM_EMAILUSERMONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILUSERMONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILUSER6MONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILUSER6MONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILUSER12MONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILUSER12MONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILUSER24MONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILUSER24MONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILOWNERMONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILOWNERMONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILOWNER6MONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILOWNER6MONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILOWNER12MONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILOWNER12MONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		case _MI_AUTHKEY_PERM_EMAILOWNER24MONTHLY:
+    		    if (!$gperm_handler->checkRight(_MI_AUTHKEY_PERM_AUTHKEY, _MI_AUTHKEY_PERM_EMAILOWNER24MONTHLY_ID, $groups, $modid))
+    		        return false;
+		        return true;
+		        break;
+    		        
 		}  
 			
 	}

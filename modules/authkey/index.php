@@ -36,6 +36,7 @@ if ($GLOBALS['authkeyConfigsList']['htaccess'])
 
 $xoopsOption['template_main'] = 'authkeys_index.html';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'header.php';
+$GLOBALS['xoopsTpl']->assign('moddirname', basename(dirname(__DIR__)));
 
 $criteria = new Criteria('uid', $GLOBALS['xoopsUser']->getVar('uid'));
 $criteria->setSort('`title` ASC, `name` ASC, `company`');
@@ -45,12 +46,15 @@ foreach(xoops_getModuleHandler('keys', basename(__DIR__))->getObjects($criteria)
     $GLOBALS['xoopsTpl']->append('authkeys', $key->getValues(array_keys($key->vars)));
 
 $GLOBALS['xoopsTpl']->assign('authkeys_count', xoops_getModuleHandler('keys', basename(__DIR__))->getCount($criteria));
-$GLOBALS['xoopsTpl']->assign('authkeys_allow_creating', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $GLOBALS['xoopsUser']->getVar('uid')));
-$GLOBALS['xoopsTpl']->assign('authkeys_allow_viewing', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWVIEWING, false, $GLOBALS['xoopsUser']->getVar('uid')));
-$GLOBALS['xoopsTpl']->assign('authkeys_allow_reissued', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWREISSUED, false, $GLOBALS['xoopsUser']->getVar('uid')));
 $GLOBALS['xoopsTpl']->assign('authkeys_module_version', $authkeyModule->getVar('version'));
 $GLOBALS['xoopsTpl']->assign('authkeys_module_namings', $authkeyModule->getVar('name'));
 $GLOBALS['xoopsTpl']->assign('authkeys_newkey_form', getHTMLForm('newkey'));
+// Permissions
+$GLOBALS['xoopsTpl']->assign('allow_creating', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $GLOBALS['xoopsUser']->getVar('uid')));
+$GLOBALS['xoopsTpl']->assign('allow_viewing', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWVIEWING, false, $GLOBALS['xoopsUser']->getVar('uid')));
+$GLOBALS['xoopsTpl']->assign('allow_reissued', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWREISSUED, false, $GLOBALS['xoopsUser']->getVar('uid')));
+$GLOBALS['xoopsTpl']->assign('allow_editing', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWEDITING, false, $GLOBALS['xoopsUser']->getVar('uid')));
+$GLOBALS['xoopsTpl']->assign('allow_deleting', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWDELETING, false, $GLOBALS['xoopsUser']->getVar('uid')));
 
 $GLOBALS['xoTheme']->addStylesheet(XOOPS_URL . '/module/' . basename(__DIR__) . '/assets/css/style.css');
 if (is_file(XOOPS_ROOT_PATH . '/module/' . basename(__DIR__) . '/language/' . $GLOBALS['xoopsConfig']['language'] . '/style.css'))

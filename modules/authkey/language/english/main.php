@@ -25,4 +25,12 @@ define('_MN_AUTHKEY_INDEX_PA', 'Below is the Xoopskeys/Authkeys that have been g
 define('_MN_AUTHKEY_INDEX_H2A', 'Create Xoopskeys/Authkeys for API\'s Services!');
 define('_MN_AUTHKEY_INDEX_H2B', 'Xoopskeys/Authkeys for REST API Services!');
 
+//table headers
+define('_MN_AUTHKEY_INDEX_TDA', 'XOOPS Authkey\'s');
+define('_MN_AUTHKEY_INDEX_TDB', 'Authkey Title\'s');
+define('_MN_AUTHKEY_INDEX_TDC', 'Owner Name\'s');
+define('_MN_AUTHKEY_INDEX_TDD', 'Daily Pollings');
+define('_MN_AUTHKEY_INDEX_TDE', 'Weekly Pollings');
+define('_MN_AUTHKEY_INDEX_TDF', 'Monthly Pollings');
+define('_MN_AUTHKEY_INDEX_TDG', 'Actions');
 ?>

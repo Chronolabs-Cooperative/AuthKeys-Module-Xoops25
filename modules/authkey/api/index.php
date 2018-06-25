@@ -163,7 +163,7 @@ switch ($inner['mode'])
                 $token['polling'] = $token['polling'] + 1;
                 $token['polled-last'] = $token['polled'];
                 $token['polled'] = time() + $authkeyConfigsList['polling-seconds'];
-                XoopsCache::write("xoopskey_".md5($inner['key']), $token, 3600 * 24 * 7 * 4 * 36);
+                XoopsCache::write("xoopskey_".md5($inner['xoopskey']), $token, 3600 * 24 * 7 * 4 * 36);
                
                 $key = $keysHandler->get($token['id']);
                 $return = array('code'=>201, 'passed' => true, 'user-hash' => md5($key->getVar('uid').XOOPS_URL.XOOPS_DB_PASS), 'key-hash' => md5($key->getVar('id').XOOPS_URL.XOOPS_DB_PASS));
