@@ -76,19 +76,18 @@ class AuthkeyAutoPreload extends XoopsPreloadItem
             $criteria->add(new Criteria('level', '1', '>='));
             $criteria->setLimit($GLOBALS['authkeyConfigsList']['number-auto-generated']);
             $criteria->setOrder("RAND()");
-            foreach(xoops_getHandler('users')->getObjects($criteria, true) as $user)
-                if (authkeys_checkperm(_MI_AUTHKEY_PERM_STOPISSUINGKEY, false, $user->getVar('uid')))
-                {
-                    $key = xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->create();
-                    $key->setVar('email', $user->getVar('email'));
-                    $key->setVar('title', sprintf(_MI_AUTHKEY_KEY_TITLE, $user->getVar('uname')));
-                    $key->setVar('name', (strlen($user->getVar('name'))==0?$user->getVar('uname'):$user->getVar('name')));
-                    $key->setVar('company', $GLOBALS['xoopsConfig']['sitename']);
-                    $key->setVar('url', (strlen($user->getVar('url'))==0?XOOPS_URL:$user->getVar('url')));
-                    $key->setVar('key', authkey_getAuthKey());
-                    $key->setVar('uid', $user->getVar('uid'));
-                    xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->insert($key, true);
-                }
+            foreach(xoops_getHandler('members')->getUsers($criteria, true) as $user)
+            {
+                $key = xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->create();
+                $key->setVar('email', $user->getVar('email'));
+                $key->setVar('title', sprintf(_MI_AUTHKEY_KEY_TITLE, $user->getVar('uname')));
+                $key->setVar('name', (strlen($user->getVar('name'))==0?$user->getVar('uname'):$user->getVar('name')));
+                $key->setVar('company', $GLOBALS['xoopsConfig']['sitename']);
+                $key->setVar('url', (strlen($user->getVar('url'))==0?XOOPS_URL:$user->getVar('url')));
+                $key->setVar('key', authkey_getAuthKey());
+                $key->setVar('uid', $user->getVar('uid'));
+                xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->insert($key, true);
+            }
             XoopsCache::write('auto-generate', array("time"=>time()), $GLOBALS['authkeyConfigsList']['auto-generate-seconds']);
         }
     }

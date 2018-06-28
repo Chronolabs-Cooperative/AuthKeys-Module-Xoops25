@@ -189,7 +189,7 @@ class AuthkeyPollingPreload extends XoopsPreloadItem
                 @xoops_getModuleHandler('users', basename(dirname(__DIR__)))->insert($user, true);
                 @xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->insert($key, true);
             }
-            XoopsCache::write('authkey_polling', array('time'=>time()), $authkeyConfigsList['preload-seconds']);
         }
+        XoopsCache::write('authkey_polling', array('time'=>time()), $authkeyConfigsList['preload-seconds']);
     }
 }

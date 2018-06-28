@@ -45,9 +45,10 @@ $modversion['release_date'] = "2018/05/17";
 $modversion['sqlfile']['mysql'] = 'sql/mysql.sql';
 
 // Tables created by sql file (without prefix!)
-$modversion['tables'][0]	=  'authkey_keys';
-$modversion['tables'][1]	=  'authkey_statistics';
-$modversion['tables'][2]	=  'authkey_users';
+$modversion['tables'][0]	=  'authkey_apis';
+$modversion['tables'][1]	=  'authkey_keys';
+$modversion['tables'][2]	=  'authkey_statistics';
+$modversion['tables'][3]	=  'authkey_users';
 
 // Admin things
 $modversion['hasAdmin']		= true;
@@ -83,11 +84,25 @@ $i++;
 $modversion['templates'][$i]['file'] = 'authkeys_index.html';
 $modversion['templates'][$i]['description'] = 'authkeys main index';
 $i++;
+$modversion['templates'][$i]['file'] = 'authkeys_key_view.html';
+$modversion['templates'][$i]['description'] = 'authkeys key view';
+$i++;
+$modversion['templates'][$i]['file'] = 'authkeys_key_edit.html';
+$modversion['templates'][$i]['description'] = 'authkeys key edit';
+$i++;
 $modversion['templates'][$i]['file'] = 'authkeys_key.html';
-$modversion['templates'][$i]['description'] = 'authkeys key index';
+$modversion['templates'][$i]['description'] = 'authkeys key confirm';
 $i++;
 $modversion['templates'][$i]['file'] = 'authkeys_purchase.html';
 $modversion['templates'][$i]['description'] = 'authkeys migrate to token purchases';
+$i++;
+$modversion['templates'][$i]['file'] = 'authkeys_apis.html';
+$modversion['templates'][$i]['description'] = 'authkeys migrate to token purchases';
+
+// Module Submenus
+$i=1;
+$modversion['sub'][$i]['name'] = _MI_AUTHKEY_APIS;
+$modversion['sub'][$i]['url'] = "apis.php";
 
 if (is_object($GLOBALS['xoopsUser']))
 {    
@@ -98,9 +113,9 @@ if (is_object($GLOBALS['xoopsUser']))
     $criteria->setSort('`title`');
     $keys = $keys_handler->getObjects($criteria, true);
     foreach($keys as $key) {
+        $i++;
         $modversion['sub'][$i]['name'] = $key->getVar('title');
-        $modversion['sub'][$i]['url'] = "key.php?id=".$key->getVar('id');
-    	$i++;	
+        $modversion['sub'][$i]['url'] = "key.php?id=".$key->getVar('id')."&op=view";
     }
 }
 
@@ -114,6 +129,31 @@ $modversion["blocks"][1]    = array(
     "options"         => "",
     "template"        => "authkey_over.html",
     );
+
+$i++;
+$modversion['config'][$i]['name'] = 'api-reporting';
+$modversion['config'][$i]['title'] = "_MI_AUTHKEY_API_REPORTING";
+$modversion['config'][$i]['description'] = "_MI_AUTHKEY_API_REPORTING_DESC";
+$modversion['config'][$i]['formtype'] = 'group_multi';
+$modversion['config'][$i]['valuetype'] = 'array';
+$modversion['config'][$i]['default'] = array(XOOPS_GROUP_ADMIN=>XOOPS_GROUP_ADMIN);
+
+$i++;
+$modversion['config'][$i]['name'] = 'tmp-path';
+$modversion['config'][$i]['title'] = "_MI_AUTHKEY_TMP_PATH";
+$modversion['config'][$i]['description'] = "_MI_AUTHKEY_TMP_PATH_DESC";
+$modversion['config'][$i]['formtype'] = 'txt';
+$modversion['config'][$i]['valuetype'] = 'text';
+$modversion['config'][$i]['default'] = '/tmp';
+
+$i++;
+$modversion['config'][$i]['name'] = 'delete-seconds';
+$modversion['config'][$i]['title'] = "_MI_AUTHKEY_DELETE_SECONDS";
+$modversion['config'][$i]['description'] = "_MI_AUTHKEY_DELETE_SECONDS_DESC";
+$modversion['config'][$i]['formtype'] = 'select';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = (3600*24*7*4*12*mt_rand(2,6));
+$modversion['config'][$i]['options'] = array('After 2 Years' => (3600*24*7*4*12*2), 'After 3 Years' => (3600*24*7*4*12*3), 'After 4 Years' => (3600*24*7*4*12*4), 'After 5 Years' => (3600*24*7*4*12*5), 'After 6 Years' => (3600*24*7*4*12*6), 'After 7 Years' => (3600*24*7*4*12*7), 'After 8 Years' => (3600*24*7*4*12*8), 'After 9 Years' => (3600*24*7*4*12*9), 'After a Decade' => (3600*24*7*4*12*10));
 
 $i++;
 $modversion['config'][$i]['name'] = 'auto-generate';

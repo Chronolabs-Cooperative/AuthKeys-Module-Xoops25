@@ -31,12 +31,13 @@ if (!defined('XOOPS_ROOT_PATH')) {
 class AuthkeyStatistics extends XoopsObject
 {
     
-    function AuthkeyStatistics($id = null)
+    function __construct($id = null)
     {
         $this->initVar('id', XOBJ_DTYPE_INT, null, false);
+        $this->initVar('api-id', XOBJ_DTYPE_INT, null, false);
         $this->initVar('key-id', XOBJ_DTYPE_INT, null, false);
         $this->initVar('uid', XOBJ_DTYPE_INT, null, false);
-        $this->initVar('type', XOBJ_DTYPE_ENUM, null, false, false, false, false, array('hour','day','week','month','quarter','year', 'user-hour','user-day','user-week','user-month','user-quarter','user-year'));
+        $this->initVar('type', XOBJ_DTYPE_ENUM, null, false, false, false, false, array('hour', 'day', 'week', 'month', 'quarter', 'year', 'user-hour', 'user-day', 'user-week', 'user-month', 'user-quarter', 'user-year', 'api-hour', 'api-day', 'api-week', 'api-month', 'api-quarter', 'api-year'));
         $this->initVar('calls', XOBJ_DTYPE_INT, null, false);
         $this->initVar('limit', XOBJ_DTYPE_INT, null, false);
         $this->initVar('over', XOBJ_DTYPE_INT, null, false);
@@ -63,15 +64,26 @@ class AuthkeyStatisticsHandler extends XoopsPersistableObjectHandler
         parent::__construct($db, 'authkey_statistics', 'AuthkeyStatistics', "id", "key-id");
     }
 
+    function __destruct()
+    {
+        global $authkeyModule, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions;      
+        @$this->db->queryF("DELETE FROM `" . $this->db->prefix('authkey_statistics') . "` WHERE `begining` < UNIX_TIMESTAMP() - " . $GLOBALS['authkeyConfigsList']['delete-seconds']);
+    }
+    
     function insert(AuthkeyStatistics $object, $force = true)
     {
+        global $authkeyModule, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions;
+        
+        
         if ($object->isNew())
         {
-            if ($object->getVar('key-id') != 0)
-                $key = xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->get($object->getVar('key-id'));
-            if ($object->getVar('uid') != 0)
+            if ($object->getVar('key-id') > 0)
+                $item = xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->get($object->getVar('key-id'));
+            elseif ($object->getVar('api-id') > 0)
+                $item = xoops_getModuleHandler('apis', basename(dirname(__DIR__)))->get($object->getVar('api-id'));
+            if ($object->getVar('uid') > 0)
                 $user = xoops_getHandler('users')->get($object->getVar('uid'));
-            if ($object->getVar('over') != 0 && $key->getVar('emailed') < time() && $authkeyConfigsList['limited'] == true)
+            if ($object->getVar('over') != 0 && $item->getVar('emailed') < time() && $GLOBALS['authkeyConfigsList']['limited'] == true && is_a($item, 'AuthkeyKeys'))
             {
                 xoops_load('XoopsMailer');
                 $mailer = new XoopsMailer($GLOBALS['xoopsConfig']['sitename'], $GLOBALS['xoopsConfig']['adminemail']);
@@ -82,14 +94,14 @@ class AuthkeyStatisticsHandler extends XoopsPersistableObjectHandler
                 $mailer->setTemplate('quota_polling_overlimit.txt');
                 $mailer->setFromEmail($GLOBALS['xoopsConfig']['adminemail']);
                 $mailer->setFromName($GLOBALS['xoopsConfig']['sitename']);
-                $mailer->assign('KEY', $key->getVar('key'));
-                $mailer->assign('MD5KEY', md5($key->getVar('key')));
-                $mailer->assign('SHA1KEY', sha1($key->getVar('key')));
-                $mailer->assign('KEY-TITLE', $key->getVar('title'));
-                $mailer->assign('KEY-NAME', $key->getVar('name'));
-                $mailer->assign('KEY-COMPANY', $key->getVar('company'));
-                $mailer->assign('KEY-EMAIL', $key->getVar('email'));
-                $mailer->assign('KEY-URL', $key->getVar('url'));
+                $mailer->assign('KEY', $item->getVar('key'));
+                $mailer->assign('MD5KEY', md5($item->getVar('key')));
+                $mailer->assign('SHA1KEY', sha1($item->getVar('key')));
+                $mailer->assign('KEY-TITLE', $item->getVar('title'));
+                $mailer->assign('KEY-NAME', $item->getVar('name'));
+                $mailer->assign('KEY-COMPANY', $item->getVar('company'));
+                $mailer->assign('KEY-EMAIL', $item->getVar('email'));
+                $mailer->assign('KEY-URL', $item->getVar('url'));
                 $mailer->assign('IP', authkeyGetIP(true));
                 
                 if (is_object($user))
@@ -97,12 +109,12 @@ class AuthkeyStatisticsHandler extends XoopsPersistableObjectHandler
                     $mailer->assign('UNAME', $user->getVar('uname'));
                     $mailer->assign('USERNAME', $user->getVar('name'));
                     $mailer->assign('USEREMAIL', $user->getVar('email'));
-                    $mailer->setToEmails(array($user->getVar('email'), $key->getVar('email')));
+                    $mailer->setToEmails(array($user->getVar('email'), $item->getVar('email')));
                 } else {
                     $mailer->assign('UNAME', '---');
                     $mailer->assign('USERNAME', $GLOBALS['xoopsConfig']['sitename']);
                     $mailer->assign('USEREMAIL', $GLOBALS['xoopsConfig']['adminemail']);
-                    $mailer->setToEmails(array($key->getVar('email')));
+                    $mailer->setToEmails(array($item->getVar('email')));
                 }
                 $mailer->assign('LIMITED', ($authkeyConfigsList['limited']==true?_YES:_NO));
                 $mailer->assign('PERIODICALLY', constant('_MI_AUTHKEY_PERIODICALLY_'.strtoupper($object->getVar('type'))));
@@ -112,22 +124,23 @@ class AuthkeyStatisticsHandler extends XoopsPersistableObjectHandler
                 $mailer->assign('PURCHASEAMOUNT', number_format($authkeyConfigsList['purchase-price'], 0));
                 $mailer->assign('PURCHASENOMIAL', number_format($authkeyConfigsList['purchase-nomial'], 0));
                 if ($authkeyConfigsList['htaccess'])
-                    $mailer->assign('PURCHASEURL', XOOPS_URL . "/" . $authkeyConfigsList['baseurl'] . "/purchase/" . $key->getVar('key') . "/" . md5($user->getVar('uname').$user->getVar('pass').$user->getVar('email').$user->getVar('actkey')) . $authkeyConfigsList['endofurl']);
+                    $mailer->assign('PURCHASEURL', XOOPS_URL . "/" . $authkeyConfigsList['baseurl'] . "/purchase/" . $item->getVar('key') . "/" . md5($user->getVar('uname').$user->getVar('pass').$user->getVar('email').$user->getVar('actkey')) . $authkeyConfigsList['endofurl']);
                 else
-                    $mailer->assign('PURCHASEURL', XOOPS_URL . "/modules/" . basename(dirname(__DIR__)) . "/purchase.php?xoopskey=" . $key->getVar('key') . "&userkey=" . md5($user->getVar('uname').$user->getVar('pass').$user->getVar('email').$user->getVar('actkey')));
+                    $mailer->assign('PURCHASEURL', XOOPS_URL . "/modules/" . basename(dirname(__DIR__)) . "/purchase.php?xoopskey=" . $item->getVar('key') . "&userkey=" . md5($user->getVar('uname').$user->getVar('pass').$user->getVar('email').$user->getVar('actkey')));
                 
                 $mailer->assign('CALLS', number_format($object->getVar('calls'), 0));
                 $mailer->assign('OVER', number_format($object->getVar('over'), 0));
                 $mailer->assign('LIMIT', number_format($object->getVar('limit'), 0));
                 
                 $mailer->setPriority(1);
-                $mailer->setSubject(sprintf(_MI_AUTHKEY_SUBJECT_ISSUINGKEY, $object->getVar('key')));
+                $mailer->setSubject(sprintf(_MI_AUTHKEY_SUBJECT_OVERLIMIT, number_format($object->getVar('limit'), 0), number_format($object->getVar('over'), 0)));
                 if ($mailer->send(false))
                 {
-                    $key->setVar('emailed', time() + (mt_rand(5,36) * 3600));
-                    @xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->insert($object, $force);
+                    $item->setVar('emailed', time() + (mt_rand(5,36) * 3600));
+                    @xoops_getModuleHandler('keys', basename(dirname(__DIR__)))->insert($item, $force);
                 }
             }
+            return parent::insert($object, true);
         }
     }
 }

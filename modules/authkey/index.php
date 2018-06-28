@@ -42,13 +42,26 @@ $criteria = new Criteria('uid', $GLOBALS['xoopsUser']->getVar('uid'));
 $criteria->setSort('`title` ASC, `name` ASC, `company`');
 $criteria->setOrder('ASC');
 
-foreach(xoops_getModuleHandler('keys', basename(__DIR__))->getObjects($criteria) as $key)   
-    $GLOBALS['xoopsTpl']->append('authkeys', $key->getValues(array_keys($key->vars)));
+foreach(xoops_getModuleHandler('keys', basename(__DIR__))->getObjects($criteria) as $key)
+{
+    $keyarr = array();
+    foreach($key->getValues(array_keys($key->vars)) as $field => $value)
+    {
+        if (substr($field, 0, 5) == 'calls' || substr($field, 0, 5) == 'limit' ) {
+            $keyarr[str_replace("-", "_", $field)] = number_format($value, 0);
+        } elseif (in_array($field, array('stats-hour', 'stats-day', 'stats-week', 'stats-month', 'stats-quarter', 'stats-year', 'report-month', 'report-quarter', 'report-year', 'report-biannual', 'created', 'issuing', 'quoting', 'emailed'))) {
+            $keyarr[str_replace("-", "_", $field)] = date("Y/m/d H:i:s", $value);
+        } else { 
+            $keyarr[str_replace("-", "_", $field)] = $value;
+        }
+    }
+    $GLOBALS['xoopsTpl']->append('authkeys', $keyarr);
+}
 
 $GLOBALS['xoopsTpl']->assign('authkeys_count', xoops_getModuleHandler('keys', basename(__DIR__))->getCount($criteria));
-$GLOBALS['xoopsTpl']->assign('authkeys_module_version', $authkeyModule->getVar('version'));
+$GLOBALS['xoopsTpl']->assign('authkeys_module_version', $authkeyModule->getVar('version') / 100);
 $GLOBALS['xoopsTpl']->assign('authkeys_module_namings', $authkeyModule->getVar('name'));
-$GLOBALS['xoopsTpl']->assign('authkeys_newkey_form', getHTMLForm('newkey'));
+$GLOBALS['xoopsTpl']->assign('authkeys_newkey_form', getHTMLForm('newkey'   ));
 // Permissions
 $GLOBALS['xoopsTpl']->assign('allow_creating', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $GLOBALS['xoopsUser']->getVar('uid')));
 $GLOBALS['xoopsTpl']->assign('allow_viewing', authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWVIEWING, false, $GLOBALS['xoopsUser']->getVar('uid')));

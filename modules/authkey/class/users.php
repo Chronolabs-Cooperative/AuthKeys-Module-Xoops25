@@ -31,7 +31,7 @@ if (!defined('XOOPS_ROOT_PATH')) {
 class AuthkeyUsers extends XoopsObject
 {
 
-    function AuthkeyUsers($uid = null)
+    function __construct($uid = null)
     {
         $this->initVar('uid', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('uname', XOBJ_DTYPE_TXTBOX, null, false, 128);
@@ -87,6 +87,7 @@ class AuthkeyUsersHandler extends XoopsPersistableObjectHandler
     
     function insert(AuthkeyUsers $object, $force = true)
     {
+        global $authkeyModule, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions;
         
         if ($object->isNew())
         {

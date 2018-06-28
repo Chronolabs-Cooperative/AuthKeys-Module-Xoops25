@@ -113,15 +113,45 @@ switch ($inner['mode'])
         break;
     case "verify":
         if (!strlen($inner['xoopskey']))
-            $return = array('code' => 501, 'errors' => array(108 => 'Variable required to be passed the the authkey/xoopskey in the field element: "xoopskey" ~ field element not found!'));
+            $return = array('code' => 501, 'errors' => array(108 => 'Variable required to be passed the authkey/xoopskey in the field element: "xoopskey" ~ field element not found!'));
+        if (!strlen($inner['api-url']))
+            $return = array('code' => 501, 'errors' => array(113 => 'Variable required to be passed with the api in the field element: "api-url" ~ field element not found!'));
+        
         if (empty($return)) {
+            $apisHandler = xoops_getModuleHandler('apis', basename(dirname(__DIR__)));
+            $criteria = new CriteriaCompo(new Criteria('`api-http`', $inner['api-url'], 'LIKE'));
+            $criteria->add(new Criteria('`api-https`', $inner['api-url'], 'LIKE'), 'OR');
+            if ($apisHandler->getCount($criteria)==0)
+                $return = array('code' => 501, 'errors' => array(114 => 'Variable passed but not found on the with the api in the field element: "api-url" ~ "'.$inner['api-url'].'" not found on resource!'));
+            else {
+                $apis = $apisHandler->getObjects($criteria);
+                if (!empty($apis[0]))
+                {
+                    $api = $apis[0];
+                    unset($apis);
+                }
+            }
             $keysHandler = xoops_getModuleHandler('keys', basename(dirname(__DIR__)));
-            if (!$token = XoopsCache::read("xoopskey_".md5($inner['xoopskey'])))
+            if (!$token = XoopsCache::read("xoopskey_".md5($inner['xoopskey'])) && empty($return))
             {
                 if (!$key = $keysHandler->getByXoopsKey($inner['xoopskey']))
                     $return = array('code' => 501, 'errors' => array(109 => 'Variable not found in database being passed as the xoopskey in the field element: "key" ~ field element data not found!'));
                 if (is_object($key) && empty($return))
                 {
+                    
+                    if ($api->getVar('stats-hour') < time())
+                        $api->setVar('stats-hour', time() + (3600));
+                    if ($api->getVar('stats-day') < time())
+                        $api->setVar('stats-day', time() + (3600 * 24));
+                    if ($api->getVar('stats-week') < time())
+                        $api->setVar('stats-week', time() + (3600 * 24 * 7));
+                    if ($api->getVar('stats-month') < time())
+                        $api->setVar('stats-month', time() + (3600 * 24 * 7 * 4));
+                    if ($api->getVar('stats-quarter') < time())
+                        $api->setVar('stats-quarter', time() + (3600 * 24 * 7 * 4 * 3));
+                    if ($api->getVar('stats-year') < time())
+                        $api->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
+                        
                     if ($key->getVar('stats-hour') < time())
                         $key->setVar('stats-hour', time() + (3600));
                     if ($key->getVar('stats-day') < time())
@@ -152,7 +182,8 @@ switch ($inner['mode'])
                     @xoops_getModuleHandler('users', basename(dirname(__DIR__)))->insert($user, true);
                     $key = $keysHandler->get($keyid = $keysHandler->insert($key, true));
                     $data = $key->getValues(array_keys($key->vars));
-                    $data['polling'] = 0;
+                    $token[$api->getVar('api-type')][$inner['api-url']] = 1;
+                    $data['polling'] = 1;
                     $data['polled'] = time();
                     XoopsCache::write("xoopskey_".md5($key->getVar('key')), $data, 3600 * 24 * 7 * 4 * 36);
                     XoopsCache::write("xoopskey_".md5(md5($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
@@ -160,6 +191,10 @@ switch ($inner['mode'])
                     $return = array('code'=>201, 'passed' => true);
                 }
             } else {
+                if (isset($token[$api->getVar('api-type')][$inner['api-url']]))
+                    $token[$api->getVar('api-type')][$inner['api-url']] = $token[$api->getVar('api-type')][$inner['api-url']] + 1;
+                else 
+                    $token[$api->getVar('api-type')][$inner['api-url']] = 1;
                 $token['polling'] = $token['polling'] + 1;
                 $token['polled-last'] = $token['polled'];
                 $token['polled'] = time() + $authkeyConfigsList['polling-seconds'];
@@ -172,6 +207,15 @@ switch ($inner['mode'])
                     if ($token = XoopsCache::read("xoopskey_".$keyy)) {
                         if ($token['polled-last'] < time() || $key->getVar('stats-hour') < time() || $key->getVar('stats-day') < time() || $key->getVar('stats-week') < time() || $key->getVar('stats-month') < time() || $key->getVar('stats-quarter') < time() || $key->getVar('stats-year') < time())
                         {
+                            
+                            $api->setVar('calls-hour', $api->getVar('calls-hour') + $token[$api->getVar('api-type')][$inner['api-url']]);
+                            $api->setVar('calls-day', $api->getVar('calls-day') + $token[$api->getVar('api-type')][$inner['api-url']]);
+                            $api->setVar('calls-week', $api->getVar('calls-week') + $token[$api->getVar('api-type')][$inner['api-url']]);
+                            $api->setVar('calls-month', $api->getVar('calls-month') + $token[$api->getVar('api-type')][$inner['api-url']]);
+                            $api->setVar('calls-quarter', $api->getVar('calls-quarter') + $token[$api->getVar('api-type')][$inner['api-url']]);
+                            $api->setVar('calls-year', $api->getVar('calls-year') + $token[$api->getVar('api-type')][$inner['api-url']]);
+                            $token[$api->getVar('api-type')][$inner['api-url']] = 0;
+                            
                             $key = $keysHandler->get($token['id']);
                             $key->setVar('calls-hour', $key->getVar('calls-hour') + $token['polling']);
                             $key->setVar('calls-day', $key->getVar('calls-day') + $token['polling']);
@@ -262,7 +306,19 @@ switch ($inner['mode'])
                     
                 if ($key->getVar('stats-hour') < time() || $key->getVar('stats-day') < time() || $key->getVar('stats-week') < time() || $key->getVar('stats-month') < time() || $key->getVar('stats-quarter') < time() || $key->getVar('stats-year') < time())
                 {
-                    
+                    if ($api->getVar('stats-hour') < time())
+                        $api->setVar('stats-hour', time() + (3600));
+                    if ($api->getVar('stats-day') < time())
+                        $api->setVar('stats-day', time() + (3600 * 24));
+                    if ($api->getVar('stats-week') < time())
+                        $api->setVar('stats-week', time() + (3600 * 24 * 7));
+                    if ($api->getVar('stats-month') < time())
+                        $api->setVar('stats-month', time() + (3600 * 24 * 7 * 4));
+                    if ($api->getVar('stats-quarter') < time())
+                        $api->setVar('stats-quarter', time() + (3600 * 24 * 7 * 4 * 3));
+                    if ($api->getVar('stats-year') < time())
+                        $api->setVar('stats-year', time() + (3600 * 24 * 7 * 4 * 12));
+                        
                     if ($key->getVar('stats-hour') < time())
                         $key->setVar('stats-hour', time() + (3600));
                     if ($key->getVar('stats-day') < time())
@@ -294,13 +350,14 @@ switch ($inner['mode'])
                     
                     $key = $keysHandler->get($keyid = $keysHandler->insert($key, true));
                     $data = $key->getValues(array_keys($key->vars));
+                    $data[$api->getVar('api-type')][$inner['api-url']] = 0;
                     $data['polling'] = 0;
-                    $data['polled'] = time();
+                    $data['polled'] = time() + $authkeyConfigsList['polling-seconds'];
                     XoopsCache::write("xoopskey_".md5($key->getVar('key')), $data, 3600 * 24 * 7 * 4 * 36);
                     XoopsCache::write("xoopskey_".md5(md5($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
                     XoopsCache::write("xoopskey_".md5(sha1($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
                 }
-                
+                @$apisHandler->insert($api, true);
                 if ($authkeyConfigsList['limited'] == true && $overlimit == true && !authkeys_checkperm(_MI_AUTHKEY_PERM_UNLIMITEDCALLS, $key->getVar('id'), $key->getVar('uid')) == false) 
                     $return = array('code'=>501, 'passed' => false, 'errors' => array(110 => 'Over Limit of Calling Polls to API\'s'));                    
             }

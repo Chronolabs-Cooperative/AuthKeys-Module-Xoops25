@@ -31,7 +31,7 @@ if (!defined('XOOPS_ROOT_PATH')) {
 class AuthkeyKeys extends XoopsObject
 {
 
-    function AuthkeyKeys($id = null)
+    function __construct($id = null)
     {
         $this->initVar('id', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('key', XOBJ_DTYPE_TXTBOX, null, false, 128);
@@ -119,6 +119,7 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
     
     function insert(AuthkeyKeys $object, $force = true)
     {
+        global $authkeyModule, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions;
         
         if ($object->isNew())
         {
@@ -135,12 +136,12 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
             $object->setVar('issuing', time());
             if (!strlen(trim($object->getVar('key'))))
                 $object->setVar('key', authkey_getAuthKey());
-            $object->setVar('limit-hour', $authkeyConfigsList['limit-hour']);
-            $object->setVar('limit-day', $authkeyConfigsList['limit-day']);
-            $object->setVar('limit-week', $authkeyConfigsList['limit-week']);
-            $object->setVar('limit-month', $authkeyConfigsList['limit-month']);
-            $object->setVar('limit-quarter', $authkeyConfigsList['limit-quarter']);
-            $object->setVar('limit-year', $authkeyConfigsList['limit-year']);
+            $object->setVar('limit-hour', $GLOBALS['authkeyConfigsList']['limit-hour']);
+            $object->setVar('limit-day', $GLOBALS['authkeyConfigsList']['limit-day']);
+            $object->setVar('limit-week', $GLOBALS['authkeyConfigsList']['limit-week']);
+            $object->setVar('limit-month', $GLOBALS['authkeyConfigsList']['limit-month']);
+            $object->setVar('limit-quarter', $GLOBALS['authkeyConfigsList']['limit-quarter']);
+            $object->setVar('limit-year', $GLOBALS['authkeyConfigsList']['limit-year']);
             
             $object->setVar('report-monthly', time() + (3600 * 24 * 7 * 4));
             $object->setVar('report-halfyear', time() + (3600 * 24 * 7 * 4 * 6));
@@ -204,6 +205,8 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
             $mailer->setTemplate('issuing_authkey.txt');
             $mailer->setFromEmail($GLOBALS['xoopsConfig']['adminemail']);
             $mailer->setFromName($GLOBALS['xoopsConfig']['sitename']);
+            
+            $mailer->assign('APIS', xoops_getModuleHandler('apis', basename(dirname(__DIR__)))->getAPIsText());
             $mailer->assign('KEY', $object->getVar('key'));
             $mailer->assign('MD5KEY', md5($object->getVar('key')));
             $mailer->assign('SHA1KEY', sha1($object->getVar('key')));
@@ -226,7 +229,7 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
                 $mailer->assign('USEREMAIL', $GLOBALS['xoopsConfig']['adminemail']);
                 $mailer->setToEmails(array($GLOBALS['xoopsConfig']['adminemail'], $object->getVar('email')));
             }
-            $mailer->assign('LIMITED', ($authkeyConfigsList['limited']==true?_YES:_NO));
+            $mailer->assign('LIMITED', ($GLOBALS['authkeyConfigsList']['limited']==true?_YES:_NO));
             $mailer->assign('LIMIT-HOUR', $object->getVar('limit-hour'));
             $mailer->assign('LIMIT-DAY', $object->getVar('limit-day'));
             $mailer->assign('LIMIT-WEEK', $object->getVar('limit-week'));
