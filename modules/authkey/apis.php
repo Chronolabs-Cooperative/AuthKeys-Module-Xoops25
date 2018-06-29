@@ -44,8 +44,8 @@ foreach(xoops_getModuleHandler('apis', basename(__DIR__))->getObjects($criteria)
         if (substr($field, 0, 5) == 'calls') {
             $apiarr[str_replace("-", "_", $field)] = number_format($value, 0);
         } elseif (in_array($field, array('online', 'offline'))) {
-            if ($value = $api->getVar('status'))
-                $apiarr[str_replace("-", "_", $field)] = authkey_getTimePeriod($value + (time() - $api->getVar('checked')));
+            if ($field = $api->getVar('status'))
+                $apiarr[str_replace("-", "_", $field)] = authkey_getTimePeriod($value + ((time() > $api->getVar('checked') ? time() - $api->getVar('checked') : $api->getVar('checked') - time())));
             else
                 $apiarr[str_replace("-", "_", $field)] = authkey_getTimePeriod($value);
         } elseif (in_array($field, array('stats-hour', 'stats-day', 'stats-week', 'stats-month', 'stats-quarter', 'stats-year', 'report-month', 'report-quarter', 'report-year', 'report-biannual', 'created', 'checked', 'checking', 'emailed'))) {
