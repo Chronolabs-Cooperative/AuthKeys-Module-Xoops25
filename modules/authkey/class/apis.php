@@ -60,9 +60,9 @@ class AuthkeyApis extends XoopsObject
 		$this->initVar('stats-month', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-quarter', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-year', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-month', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-quarter', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-year', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-monthly', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-halfyear', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-fullyear', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('report-biannual', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('created', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('emailed', XOBJ_DTYPE_INT, null, false);
@@ -91,19 +91,20 @@ class AuthkeyApisHandler extends XoopsPersistableObjectHandler
         
         if (!$read = XoopsCache::read('xoopskeys_apis'))
         {
-            $csv = array_map('str_getcsv', getURIData($this->_csv_resources, 120, 120));
+            $csv = array_map('str_getcsv', file($this->_csv_resources));
             array_walk($csv, function(&$a) use ($csv) {
                 $a = array_combine($csv[0], $a);
             });
             array_shift($csv);
-            
+                        
             foreach($csv as $line => $values)
             {
-                $criteria = new CriteriaCompo(new Criteria('`api-http`', $values['API HTTP']));
-                $criteria->add(new Criteria('`api-https`', $values['API HTTPS']));
-                $criteria->add(new Criteria('`api-type`', $values['API Type']));
+                $criteria = new CriteriaCompo(new Criteria('`api-http`', $this->db->escape($values['API HTTP'])));
+                $criteria->add(new Criteria('`api-https`', $this->db->escape($values['API HTTPS'])));
+                $criteria->add(new Criteria('`api-type`', $this->db->escape($values['API Type'])));
                 
-                if ($this->count($criteria) == 0 && ((isset($values['API Authenticate Write'])?$values['API Authenticate Write']:$values['API Authicate Write']) == 'xoopskey' || (isset($values['API Authenticate Read'])?$values['API Authenticate Read']:$values['API Authicate Read']) == 'xoopskey'))
+                
+                if ($this->getCount($criteria) == 0 && ((isset($values['API Authenticate Write'])?$values['API Authenticate Write']:$values['API Authicate Write']) == 'xoopskey' || (isset($values['API Authenticate Read'])?$values['API Authenticate Read']:$values['API Authicate Read']) == 'xoopskey'))
                 {
                     $object = $this->create();
                     $object->setVar('api-name', $values['API Name']);
@@ -119,7 +120,7 @@ class AuthkeyApisHandler extends XoopsPersistableObjectHandler
                     $object->setVar('checked', time() + mt_rand(1800, 3600*mt_rand(2,7)));
                     $object->setVar('checking', $object->getVar('checked'));
                     @$this->insert($object, true);
-                } elseif ($this->count($criteria) != 0) {
+                } elseif ($this->getCount($criteria) != 0) {
                     $objects = $this->getObjects($criteria);
                     if (!empty($objects[0]))
                     {

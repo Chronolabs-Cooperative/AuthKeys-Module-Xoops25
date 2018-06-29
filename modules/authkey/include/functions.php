@@ -20,6 +20,54 @@
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'xcp' . DIRECTORY_SEPARATOR . 'xcp.class.php';
 
+
+if (!function_exists("authkey_getTimePeriod")) {
+    
+    /* function eightbit_loadConfig()
+     *
+     * Converts Seconds to Staggered United Display
+     *
+     * @author 		Simon Roberts (Chronolabs) simon@labs.coop
+     *
+     * @return 		array()
+     */
+    function authkey_getTimePeriod($seconds = 0)
+    {
+        $result = array();
+        $months = 3600 * 24 * 7 * 4;
+        $weeks = 3600 * 24 * 7;
+        $days = 3600 * 24;
+        $hours = 3600;
+        $minutes = 3600 / 60;
+        $seconds = 60;
+        if (floor($seconds / $months) != 0) {
+            $result[] = floor($seconds / $months) . 'mth';
+            $seconds = $seconds - (floor($seconds / $months) * $months);
+        }
+        if (floor($seconds / $weeks) != 0) {
+            $result[] = floor($seconds / $weeks) . 'wk';
+            $seconds = $seconds - (floor($seconds / $weeks) * $weeks);
+        }
+        if (floor($seconds / $days) != 0) {
+            $result[] = floor($seconds / $days) . 'd';
+            $seconds = $seconds - (floor($seconds / $days) * $days);
+        }
+        if (floor($seconds / $hours) != 0) {
+            $result[] = floor($seconds / $hours) . 'h';
+            $seconds = $seconds - (floor($seconds / $hours) * $hours);
+        }
+        if (floor($seconds / $minutes) != 0) {
+            $result[] = floor($seconds / $minutes) . 'm';
+            $seconds = $seconds - (floor($seconds / $minutes) * $minutes);
+        }
+        if (floor($seconds) != 0) {
+            $result[] = floor($seconds) . 's';
+            $seconds = $seconds - (floor($seconds));
+        }
+        return implode(" ", $result);
+    }
+}
+
 function getHTMLForm($mode = '')
 {
     

@@ -1,39 +1,36 @@
 <h1><{$authkeys_module_namings}> ~ v<{$authkeys_module_version}></h1>
-<p><{$smarty.const._MN_AUTHKEY_INDEX_PA}></p>
-<{if $authkeys_count == 0 || ($authkeys_count >= 1 && $allow_creating == true)}>
-<h2><{$smarty.const._MN_AUTHKEY_INDEX_H2A}></h2>
-<div style="margin-left: 17.1831%; margin-right: 17.1831%; margin-bottom: 25px; margin-top: 17px; font-size: 67%;">
-	<div style="padding: 6px; border: 3px dashed black;">
-		<{$authkeys_newkey_form}>
-	</div>
-</div>
-<{/if}>
-<{if $authkeys_count > 0}>
-<h2><{$smarty.const._MN_AUTHKEY_INDEX_H2B}></h2>
+<p><{$smarty.const._MN_AUTHKEY_APIS_PA}></p>
+<{if $apis_count > 0}>
+<h2><{$smarty.const._MN_AUTHKEY_APIS_H2A}></h2>
 <table>
 	<tr class='head'>
-		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_INDEX_TDA}></td>
-		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_INDEX_TDB}></td>
-		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_INDEX_TDC}></td>
-		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_INDEX_TDD}></td>
-		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_INDEX_TDE}></td>
-		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_INDEX_TDF}></td>
-		<td style='text-align: right;'><{$smarty.const._MN_AUTHKEY_INDEX_TDG}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDA}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDB}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDC}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDD}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDE}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDF}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDG}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDH}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDI}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDJ}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDK}></td>
+		<td style='text-align: center;'><{$smarty.const._MN_AUTHKEY_APIS_TDL}></td>
 	</tr>
-	<{foreach from=$authkeys item=key}>
+	<{foreach from=$apis item=api}>
 	<tr class='<{cycle values='even,odd'}>'>
-		<td style='text-align: center; font-weight: 700; width: auto !important;'><{$key.key}></td>
-		<td style='text-align: center; width: auto !important;'><{$key.title}></td>
-		<td style='text-align: center; width: auto !important;'><{$key.name}></td>
-		<td style='text-align: center; width: 125px !important;'><{$key.calls_day}> / <strong><{$key.limit_day}></strong><{if $key.overs_day > 0}>&nbsp;<font style='color: red; font-weight: 900;'>( <{$key.overs_day}> )</font><{/if}></td>
-		<td style='text-align: center; width: 125px !important;'><{$key.calls_week}> / <strong><{$key.limit_week}></strong><{if $key.overs_week > 0}>&nbsp;<font style='color: red; font-weight: 900;'>( <{$key.overs_week}> )</font><{/if}></td>
-		<td style='text-align: center; width: 125px !important;'><{$key.calls_month}> / <strong><{$key.limit_month}></strong><{if $key.overs_month > 0}>&nbsp;<font style='color: red; font-weight: 900;'>( <{$key.overs_month}> )</font><{/if}></td>
-		<td style='text-align: right; width: 120px !important;'>
-																<{if $allow_viewing}><a href="<{$xoops_url}>/modules/authkey/key.php?id=<{$key.id}>&op=view" ><img src="<{$xoops_url}>/modules/authkey/assets/images/16x16/view.png" /></a><{/if}>
-																<{if $allow_editing}><a href="<{$xoops_url}>/modules/authkey/key.php?id=<{$key.id}>&op=edit" ><img src="<{$xoops_url}>/modules/authkey/assets/images/16x16/edit.png" /></a><{/if}>
-																<{if $allow_reissued}><a href="<{$xoops_url}>/modules/authkey/key.php?id=<{$key.id}>&op=reissue" ><img src="<{$xoops_url}>/modules/authkey/assets/images/16x16/issue.png" /></a><{/if}>
-																<{if $allow_deleting}><a href="<{$xoops_url}>/modules/authkey/key.php?id=<{$key.id}>&op=delete" ><img src="<{$xoops_url}>/modules/authkey/assets/images/16x16/delete.png" /></a><{/if}>
-		</td>
+		<td style='text-align: center; width: 28px !important;'><img src="<{$api.api_icon}>" /></td>
+		<td style='text-align: center; width: auto !important;'><{$api.api_name}></td>
+		<td style='text-align: center; width: auto !important;'><a href="<{$api.url}>" target="_blank"><{$api.url}></a></td>
+		<td style='text-align: center; width: auto !important;'><{$api.status}></td>
+		<td style='text-align: center; width: 45px !important;'><{$api.api_write}></td>
+		<td style='text-align: center; width: 45px !important;'><{$api.api_read}></td>
+		<td style='text-align: center; width: 55px !important;'><{$api.online}></td>
+		<td style='text-align: center; width: 55px !important;'><{$api.offline}></td>
+		<td style='text-align: center; width: 75px !important;'><{$api.calls_day}></td>
+		<td style='text-align: center; width: 95px !important;'><{$api.stats_day}></td>
+		<td style='text-align: center; width: 75px !important;'><{$api.calls_month}></td>
+		<td style='text-align: center; width: 95px !important;'><{$api.stats_month}></td>
 	</tr>
 	<{/foreach}>
 </table>

@@ -100,12 +100,12 @@ $modversion['templates'][$i]['file'] = 'authkeys_apis.html';
 $modversion['templates'][$i]['description'] = 'authkeys migrate to token purchases';
 
 // Module Submenus
-$i=1;
-$modversion['sub'][$i]['name'] = _MI_AUTHKEY_APIS;
-$modversion['sub'][$i]['url'] = "apis.php";
-
 if (is_object($GLOBALS['xoopsUser']))
-{    
+{
+    $i=1;
+    $modversion['sub'][$i]['name'] = _MI_AUTHKEY_APIS;
+    $modversion['sub'][$i]['url'] = "apis.php";
+    
     // Submenu Items
     $keys_handler =& xoops_getmodulehandler('keys', 'authkey');
     $criteria = new CriteriaCompo(new Criteria('uid', $GLOBALS['xoopsUser']->getVar('uid')));
@@ -137,6 +137,15 @@ $modversion['config'][$i]['description'] = "_MI_AUTHKEY_API_REPORTING_DESC";
 $modversion['config'][$i]['formtype'] = 'group_multi';
 $modversion['config'][$i]['valuetype'] = 'array';
 $modversion['config'][$i]['default'] = array(XOOPS_GROUP_ADMIN=>XOOPS_GROUP_ADMIN);
+
+$i++;
+$modversion['config'][$i]['name'] = 'minimum-lines';
+$modversion['config'][$i]['title'] = "_MI_AUTHKEY_MINUMUM_LINES";
+$modversion['config'][$i]['description'] = "_MI_AUTHKEY_MINUMUM_LINES_DESC";
+$modversion['config'][$i]['formtype'] = 'select';
+$modversion['config'][$i]['valuetype'] = 'int';
+$modversion['config'][$i]['default'] = mt_rand(2, 6);
+$modversion['config'][$i]['options'] = array('1 Line of Data' => 1, '2 Lines of Data' => 2, '3 Lines of Data' => 3, '4 Lines of Data' => 4, '5 Lines of Data' => 5, '6 Lines of Data' => 6, '7 Lines of Data' => 7, '8 Lines of Data' => 8, '9 Lines of Data' => 9, '10 Lines of Data' => 10);
 
 $i++;
 $modversion['config'][$i]['name'] = 'tmp-path';

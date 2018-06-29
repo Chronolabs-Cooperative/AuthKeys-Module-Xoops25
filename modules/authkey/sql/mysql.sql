@@ -39,7 +39,7 @@ CREATE TABLE `authkey_apis` (
 	`emailed` INT(12) UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`),
 	KEY `apitypestatus` (`api-type`,`status`),
-	KEY `search` (`api-name`,`api-type`,`api-version`,`api-http`,`api-https`),
+	KEY `search` (`api-name`,`api-type`,`api-version`,`api-http`,`api-https`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 # Table structure for table authkey_keys

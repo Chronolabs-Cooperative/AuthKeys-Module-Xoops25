@@ -23,7 +23,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'header.php';
 
 if (!is_object($GLOBALS['xoopsUser']))
 {
-    redirect_header(XOOPS_URL . '/user.php', 8, _MN_AUTHKEY_LOGINREQUIRED);
+    require_once __DIR__ . DS . 'apis.php';
     exit(0);
 }
 
@@ -36,7 +36,7 @@ if ($GLOBALS['authkeyConfigsList']['htaccess'])
 
 $xoopsOption['template_main'] = 'authkeys_index.html';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'header.php';
-$GLOBALS['xoopsTpl']->assign('moddirname', basename(dirname(__DIR__)));
+$GLOBALS['xoopsTpl']->assign('moddirname', basename(__DIR__));
 
 $criteria = new Criteria('uid', $GLOBALS['xoopsUser']->getVar('uid'));
 $criteria->setSort('`title` ASC, `name` ASC, `company`');
@@ -47,7 +47,7 @@ foreach(xoops_getModuleHandler('keys', basename(__DIR__))->getObjects($criteria)
     $keyarr = array();
     foreach($key->getValues(array_keys($key->vars)) as $field => $value)
     {
-        if (substr($field, 0, 5) == 'calls' || substr($field, 0, 5) == 'limit' ) {
+        if (substr($field, 0, 5) == 'calls' || substr($field, 0, 5) == 'limit'  || substr($field, 0, 5) == 'overs') {
             $keyarr[str_replace("-", "_", $field)] = number_format($value, 0);
         } elseif (in_array($field, array('stats-hour', 'stats-day', 'stats-week', 'stats-month', 'stats-quarter', 'stats-year', 'report-month', 'report-quarter', 'report-year', 'report-biannual', 'created', 'issuing', 'quoting', 'emailed'))) {
             $keyarr[str_replace("-", "_", $field)] = date("Y/m/d H:i:s", $value);

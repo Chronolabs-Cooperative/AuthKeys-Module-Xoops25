@@ -119,8 +119,8 @@ switch ($inner['mode'])
         
         if (empty($return)) {
             $apisHandler = xoops_getModuleHandler('apis', basename(dirname(__DIR__)));
-            $criteria = new CriteriaCompo(new Criteria('`api-http`', $inner['api-url'], 'LIKE'));
-            $criteria->add(new Criteria('`api-https`', $inner['api-url'], 'LIKE'), 'OR');
+            $criteria = new CriteriaCompo(new Criteria('`api-http`', $GLOBALS['xoopsDB']->escape($inner['api-url']), 'LIKE'));
+            $criteria->add(new Criteria('`api-https`', $GLOBALS['xoopsDB']->escape($inner['api-url']), 'LIKE'), 'OR');
             if ($apisHandler->getCount($criteria)==0)
                 $return = array('code' => 501, 'errors' => array(114 => 'Variable passed but not found on the with the api in the field element: "api-url" ~ "'.$inner['api-url'].'" not found on resource!'));
             else {
@@ -197,7 +197,7 @@ switch ($inner['mode'])
                     $token[$api->getVar('api-type')][$inner['api-url']] = 1;
                 $token['polling'] = $token['polling'] + 1;
                 $token['polled-last'] = $token['polled'];
-                $token['polled'] = time() + $authkeyConfigsList['polling-seconds'];
+                $token['polled'] = time() + $GLOBALS['authkeyConfigsList']['polling-seconds'];
                 XoopsCache::write("xoopskey_".md5($inner['xoopskey']), $token, 3600 * 24 * 7 * 4 * 36);
                
                 $key = $keysHandler->get($token['id']);
@@ -234,7 +234,7 @@ switch ($inner['mode'])
                             $token['polling'] = 0;
                             
                             $overlimit = false;
-                            if ($authkeyConfigsList['limited']==true)
+                            if ($GLOBALS['authkeyConfigsList']['limited']==true)
                             {
                                 if ($key->getVar('limit-hour') < $key->getVar('calls-hour'))
                                 {
@@ -352,13 +352,13 @@ switch ($inner['mode'])
                     $data = $key->getValues(array_keys($key->vars));
                     $data[$api->getVar('api-type')][$inner['api-url']] = 0;
                     $data['polling'] = 0;
-                    $data['polled'] = time() + $authkeyConfigsList['polling-seconds'];
+                    $data['polled'] = time() + $GLOBALS['authkeyConfigsList']['polling-seconds'];
                     XoopsCache::write("xoopskey_".md5($key->getVar('key')), $data, 3600 * 24 * 7 * 4 * 36);
                     XoopsCache::write("xoopskey_".md5(md5($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
                     XoopsCache::write("xoopskey_".md5(sha1($key->getVar('key'))), $data, 3600 * 24 * 7 * 4 * 36);
                 }
                 @$apisHandler->insert($api, true);
-                if ($authkeyConfigsList['limited'] == true && $overlimit == true && !authkeys_checkperm(_MI_AUTHKEY_PERM_UNLIMITEDCALLS, $key->getVar('id'), $key->getVar('uid')) == false) 
+                if ($GLOBALS['authkeyConfigsList']['limited'] == true && $overlimit == true && !authkeys_checkperm(_MI_AUTHKEY_PERM_UNLIMITEDCALLS, $key->getVar('id'), $key->getVar('uid')) == false) 
                     $return = array('code'=>501, 'passed' => false, 'errors' => array(110 => 'Over Limit of Calling Polls to API\'s'));                    
             }
         }

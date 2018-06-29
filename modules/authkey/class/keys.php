@@ -65,9 +65,9 @@ class AuthkeyKeys extends XoopsObject
 		$this->initVar('stats-month', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-quarter', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-year', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-month', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-quarter', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-year', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-monthly', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-halfyear', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-fullyear', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('report-biannual', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('created', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('issuing', XOBJ_DTYPE_INT, null, false);
@@ -206,7 +206,7 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
             $mailer->setFromEmail($GLOBALS['xoopsConfig']['adminemail']);
             $mailer->setFromName($GLOBALS['xoopsConfig']['sitename']);
             
-            $mailer->assign('APIS', xoops_getModuleHandler('apis', basename(dirname(__DIR__)))->getAPIsText());
+            $mailer->assign('APIS', xoops_getModuleHandler('apis', basename(dirname(__DIR__)))->getAPIsText("\t * "));
             $mailer->assign('KEY', $object->getVar('key'));
             $mailer->assign('MD5KEY', md5($object->getVar('key')));
             $mailer->assign('SHA1KEY', sha1($object->getVar('key')));

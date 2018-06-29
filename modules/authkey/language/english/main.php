@@ -33,4 +33,22 @@ define('_MN_AUTHKEY_INDEX_TDD', 'Daily Pollings');
 define('_MN_AUTHKEY_INDEX_TDE', 'Weekly Pollings');
 define('_MN_AUTHKEY_INDEX_TDF', 'Monthly Pollings');
 define('_MN_AUTHKEY_INDEX_TDG', 'Actions');
+
+// apis.html - language constants
+define('_MN_AUTHKEY_APIS_PA', 'Below is the listing of the api\'s that require the XoopsKey/Authkey and there status online as well as a few other statistics!');
+define('_MN_AUTHKEY_APIS_H2A', 'API\'s Requiring Key\'s');
+
+//table headers
+define('_MN_AUTHKEY_APIS_TDA', 'Icon');
+define('_MN_AUTHKEY_APIS_TDB', 'Name');
+define('_MN_AUTHKEY_APIS_TDC', 'URL');
+define('_MN_AUTHKEY_APIS_TDD', 'Status');
+define('_MN_AUTHKEY_APIS_TDE', 'Write Permission');
+define('_MN_AUTHKEY_APIS_TDF', 'Read Permission');
+define('_MN_AUTHKEY_APIS_TDG', 'API Uptime');
+define('_MN_AUTHKEY_APIS_TDH', 'API Downtime');
+define('_MN_AUTHKEY_APIS_TDI', 'Calls Today');
+define('_MN_AUTHKEY_APIS_TDJ', 'Today Ends');
+define('_MN_AUTHKEY_APIS_TDK', 'Calls this Month');
+define('_MN_AUTHKEY_APIS_TDL', 'Month Ends');
 ?>

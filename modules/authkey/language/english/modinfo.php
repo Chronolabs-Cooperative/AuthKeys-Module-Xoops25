@@ -61,9 +61,11 @@
 	define('_MI_AUTHKEY_ADMENU4_ICON','assets/images/32x32/about.png');
 	define('_MI_AUTHKEY_ADMENU5_ICON','assets/images/32x32/exec.png');
 	
-	// LANGUAGE DESCRIPTIONS
+	// LANGUAGE DESCRIPTIONS  
 	define('_MI_AUTHKEY_API_REPORTING','Send API Overall Reports to these groups!');
 	define('_MI_AUTHKEY_API_REPORTING_DESC','The API Reports will be sent to these groups when they are made monthly, 6 monthly, yearly or biannually!');
+	define('_MI_AUTHKEY_MINUMUM_LINES','Minimum lines of data sent in *.csv report');
+	define('_MI_AUTHKEY_MINUMUM_LINES_DESC','This is the minimum lines of data that have to exist in a report to be sent to API, User or Owner Reports!');
 	define('_MI_AUTHKEY_TMP_PATH','Temporary Write Path');
 	define('_MI_AUTHKEY_TMP_PATH_DESC','This is the full path to your temporary write path');
 	define('_MI_AUTHKEY_DELETE_SECONDS','Deleting statistical data when it is!');

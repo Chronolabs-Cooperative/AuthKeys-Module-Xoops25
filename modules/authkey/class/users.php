@@ -59,9 +59,9 @@ class AuthkeyUsers extends XoopsObject
 		$this->initVar('stats-month', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-quarter', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('stats-year', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-month', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-quarter', XOBJ_DTYPE_INT, null, false);
-		$this->initVar('report-year', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-monthly', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-halfyear', XOBJ_DTYPE_INT, null, false);
+		$this->initVar('report-fullyear', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('report-biannual', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('created', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('emailed', XOBJ_DTYPE_INT, null, false);
