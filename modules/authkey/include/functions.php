@@ -215,7 +215,7 @@ function getHTMLForm($mode = '')
             
         case "newkey":
             
-            $form[] = "<form name='new-key' method=\"POST\" enctype=\"multipart/form-data\" action=\"" . ($authkeyConfigsList['htaccess'] == true ? XOOPS_URL . '/' . $authkeyConfigsList['baseurl'] . '/post.api?mode=newkey' : XOOPS_URL . '/modules/' . basename(dirname(__DIR__)) . '/post.php?mode=newkey') . '">';
+            $form[] = "<form name='new-key' method=\"POST\" enctype=\"multipart/form-data\" action=\"" . XOOPS_URL . '/modules/' . basename(dirname(__DIR__)) . '/key.php?op=newkey' . '">';
             $form[] = "\t<table class='new-key' id='new-key' style='vertical-align: top !important; min-width: 98%;'>";
             $form[] = "\t\t\t<td style='width: 320px;'>";
             $form[] = "\t\t\t\t<label for='title'>Title for Key (a Name for it):&nbsp;<font style='color: rgb(250,0,0); font-size: 139%; font-weight: bold'>*</font></label>";

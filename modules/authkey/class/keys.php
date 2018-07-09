@@ -40,6 +40,9 @@ class AuthkeyKeys extends XoopsObject
 		$this->initVar('company', XOBJ_DTYPE_TXTBOX, null, false, 64);
 		$this->initVar('email', XOBJ_DTYPE_TXTBOX, null, false, 196);
 		$this->initVar('url', XOBJ_DTYPE_TXTBOX, null, false, 255);
+		$this->initVar('ipv4', XOBJ_DTYPE_OTHER, null, false);
+		$this->initVar('ipv6', XOBJ_DTYPE_OTHER, null, false);
+		$this->initVar('netbios', XOBJ_DTYPE_OTHER, null, false);
 		$this->initVar('uid', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('calls-hour', XOBJ_DTYPE_INT, null, false);
 		$this->initVar('calls-day', XOBJ_DTYPE_INT, null, false);
@@ -343,6 +346,8 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
     {
         global $authkeyModule, $authkeyConfigsList, $authkeyConfigs, $authkeyConfigsOptions;
         
+        $reissue = $notify = false;
+        
         if ($object->isNew())
         {
             if (!authkeys_checkperm(_MI_AUTHKEY_PERM_STOPISSUINGKEY, false, $object->getVar('uid')))
@@ -352,7 +357,14 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
             if ($this->getCount($criteria) >= 1)
                 if (!authkeys_checkperm(_MI_AUTHKEY_PERM_ALLOWCREATING, false, $object->getVar('uid')))
                     return false;
-                    
+            
+            if (!strlen($object->getVar('ipv4')))
+                $object->setVar('ipv4', '*');
+            if (!strlen($object->getVar('ipv6')))
+                $object->setVar('ipv6', '*');
+            if (!strlen($object->getVar('netbios')))
+                $object->setVar('netbios', '*');
+            
             $notify = true;
             $object->setVar('created', time());
             $object->setVar('issuing', time());
@@ -411,6 +423,8 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
                         $object->setVar('overs-'.$type, 0);
                     }
                 }
+            if ($object->vars['key']['changed'])
+                $reissue = true;
         }
         $object = $this->get($keyid = parent::insert($object, $force));
         if ($notify == true)
@@ -466,6 +480,59 @@ class AuthkeyKeysHandler extends XoopsPersistableObjectHandler
                 @parent::insert($object, $force);
             }
         }
+        if ($reissue == true)
+        {
+            xoops_load('XoopsMailer');
+            $object = $this->get($keyid);
+            if ($object->getVar('uid') != 0)
+                $user = xoops_getHandler('member')->getUser($object->getVar('uid'));
+            $mailer = new XoopsMailer($GLOBALS['xoopsConfig']['sitename'], $GLOBALS['xoopsConfig']['adminemail']);
+            if (is_dir(dirname(__DIR__) . DS . 'language' . DS . $GLOBALS['xoopsConfig']['language'] . DS . 'mail_templates'))
+                $mailer->setTemplateDir(dirname(__DIR__) . DS . 'language' . DS . $GLOBALS['xoopsConfig']['language'] . DS . 'mail_templates');
+            else
+                $mailer->setTemplateDir(dirname(__DIR__) . DS . 'language' . DS . 'english' . DS . 'mail_templates');
+            $mailer->setTemplate('reissuing_authkey.txt');
+            $mailer->setFromEmail($GLOBALS['xoopsConfig']['adminemail']);
+            $mailer->setFromName($GLOBALS['xoopsConfig']['sitename']);
+            
+            $mailer->assign('APIS', xoops_getModuleHandler('apis', basename(dirname(__DIR__)))->getAPIsText("\t * "));
+            $mailer->assign('KEY', $object->getVar('key'));
+            $mailer->assign('MD5KEY', md5($object->getVar('key')));
+            $mailer->assign('SHA1KEY', sha1($object->getVar('key')));
+            $mailer->assign('KEY-TITLE', $object->getVar('title'));
+            $mailer->assign('KEY-NAME', $object->getVar('name'));
+            $mailer->assign('KEY-COMPANY', $object->getVar('company'));
+            $mailer->assign('KEY-EMAIL', $object->getVar('email'));
+            $mailer->assign('KEY-URL', $object->getVar('url'));
+            $mailer->assign('IP', authkeyGetIP(true));
+            
+            if (is_object($user))
+            {
+                $mailer->assign('UNAME', $user->getVar('uname'));
+                $mailer->assign('USERNAME', $user->getVar('name'));
+                $mailer->assign('USEREMAIL', $user->getVar('email'));
+                $mailer->setToEmails(array($user->getVar('email'), $object->getVar('email'), $GLOBALS['xoopsConfig']['adminemail']));
+            } else {
+                $mailer->assign('UNAME', '---');
+                $mailer->assign('USERNAME', $GLOBALS['xoopsConfig']['sitename']);
+                $mailer->assign('USEREMAIL', $GLOBALS['xoopsConfig']['adminemail']);
+                $mailer->setToEmails(array($GLOBALS['xoopsConfig']['adminemail'], $object->getVar('email')));
+            }
+            $mailer->assign('LIMITED', ($GLOBALS['authkeyConfigsList']['limited']==true?_YES:_NO));
+            $mailer->assign('LIMIT-HOUR', $object->getVar('limit-hour'));
+            $mailer->assign('LIMIT-DAY', $object->getVar('limit-day'));
+            $mailer->assign('LIMIT-WEEK', $object->getVar('limit-week'));
+            $mailer->assign('LIMIT-MONTH', $object->getVar('limit-month'));
+            $mailer->assign('LIMIT-QUARTER', $object->getVar('limit-quarter'));
+            $mailer->assign('LIMIT-YEAR', $object->getVar('limit-year'));
+            $mailer->setPriority(1);
+            $mailer->setSubject(sprintf(_MI_AUTHKEY_SUBJECT_REISSUINGKEY, $object->getVar('key')));
+            if ($mailer->send(false))
+            {
+                $object->setVar('emailed', time() + (mt_rand(5,36) * 3600));
+                @parent::insert($object, $force);
+            }
+        }        
         return $keyid;
     }
 }
